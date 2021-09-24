@@ -1,11 +1,12 @@
-﻿using AgileDT.Data.Entites;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using MemberService;
+using MemberService.Data.entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AgileDT.Data
+namespace MemberService.Data
 {
     public static class FreeSQL
     {
@@ -17,7 +18,7 @@ namespace AgileDT.Data
             _freesql = new FreeSql.FreeSqlBuilder()
                  .UseConnectionString(ProviderToFreesqlDbType(DbProvider), DbConnection)
                  .Build();
-            _freesql.CodeFirst.SyncStructure<EventMessage>();
+            _freesql.CodeFirst.SyncStructure<PointHistory>();
         }
 
         public static IFreeSql Instance

@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgileDT", "AgileDT\AgileDT.csproj", "{2F19382E-99BF-413F-A3CC-D51BD64B40D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService", "OrderService\OrderService.csproj", "{DD9F587E-86A8-4BB2-880E-61B114BD57ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService", "OrderService\OrderService.csproj", "{DD9F587E-86A8-4BB2-880E-61B114BD57ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemberService", "MemberService\MemberService.csproj", "{669C9CD9-D93D-4E3D-B3BE-EE7B8C96B99D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{DD9F587E-86A8-4BB2-880E-61B114BD57ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD9F587E-86A8-4BB2-880E-61B114BD57ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD9F587E-86A8-4BB2-880E-61B114BD57ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{669C9CD9-D93D-4E3D-B3BE-EE7B8C96B99D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{669C9CD9-D93D-4E3D-B3BE-EE7B8C96B99D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{669C9CD9-D93D-4E3D-B3BE-EE7B8C96B99D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{669C9CD9-D93D-4E3D-B3BE-EE7B8C96B99D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

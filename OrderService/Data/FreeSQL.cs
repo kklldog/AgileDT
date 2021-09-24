@@ -37,8 +37,6 @@ namespace OrderService.Data
         {
             switch (provider)
             {
-                case "sqlite":
-                    return FreeSql.DataType.Sqlite;
                 case "mysql":
                     return FreeSql.DataType.MySql;
                 case "sqlserver":
