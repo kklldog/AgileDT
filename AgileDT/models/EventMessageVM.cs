@@ -15,5 +15,7 @@ namespace AgileDT.models
         public MessageStatus Status { get; set; }
 
         public string QueryApi { get; set; }
+
+        public DateTime? CreateTime { get; set; }
     }
 }

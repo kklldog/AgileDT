@@ -38,7 +38,8 @@ namespace AgileDT.Controllers
                     BizzMsg = model.BizzMsg,
                     EventId = model.EventId,
                     Status = model.Status,
-                    QueryApi = model.QueryApi
+                    QueryApi = model.QueryApi,
+                    CreateTime = model.CreateTime
                 });
 
                 return new
