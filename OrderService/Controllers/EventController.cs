@@ -23,7 +23,7 @@ namespace OrderService.Controllers
             _logger = logger;
         }
 
-        [HttpGet()]
+        [HttpGet("query")]
         public async Task<object> Query(string id)
         {
             var eventMsg = await FreeSQL.Instance.Select<EventMessage>().Where(x => x.EventId == id).FirstAsync();

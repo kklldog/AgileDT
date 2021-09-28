@@ -1,3 +1,4 @@
+using AgileHttp;
 using MemberService.MessageQueue;
 using MemberService.Services;
 using Microsoft.AspNetCore.Builder;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,11 @@ namespace MemberService
 {
     public class Startup
     {
+        class ApiResult
+        {
+            public bool success { get; set; }
+        }
+
         public Startup(IConfiguration configuration)
         {
             Config.Instance = configuration;
@@ -29,7 +36,23 @@ namespace MemberService
                 var ret = service.HanldeMessage(message);
                 if (ret)
                 {
-                    m.BasicAck(args.DeliveryTag, false);
+                    dynamic obj = JsonConvert.DeserializeObject<dynamic>(message);
+                    string eventId = obj.EventId;
+                    var url = "http://localhost:5000/api/Message";
+                    using var resp = url.AsHttpClient()
+                    .Config(new RequestOptions { 
+                        ContentType ="application/json"
+                    })
+                    .Post(new
+                    {
+                        eventId = eventId,
+                        status = 4
+                    }) ;
+                    var result = resp.Deserialize<ApiResult>();
+                    if (result.success)
+                    {
+                        m.BasicAck(args.DeliveryTag, false);
+                    }
                 }
             });
         }
@@ -39,7 +62,6 @@ namespace MemberService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
         }
 
