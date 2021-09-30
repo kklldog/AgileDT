@@ -23,57 +23,5 @@ namespace OrderService.Controllers
             _logger = logger;
         }
 
-        [HttpGet("query")]
-        public async Task<object> Query(string id)
-        {
-            var eventMsg = await FreeSQL.Instance.Select<EventMessage>().Where(x => x.EventId == id).FirstAsync();
-
-            if (eventMsg == null || eventMsg.Status == MessageStatus.Cancel)
-            {
-                return new
-                {
-                    success = true,
-                    status = MessageStatus.Cancel
-                };
-            }
-
-            if (eventMsg.Status == MessageStatus.Done)
-            {
-                return new
-                {
-                    success = true,
-                    status = MessageStatus.Done
-                };
-            }
-
-            if (eventMsg.Status == MessageStatus.Prepare)
-            {
-                if ((DateTime.Now - eventMsg.CreateTime.Value).TotalSeconds > 60)
-                {
-                    //如果 prepare 状态大于60s，直接认为已经取消
-                    return new
-                    {
-                        success = true,
-                        status = MessageStatus.Cancel
-                    };
-                }
-
-                var order = await FreeSQL.Instance.Select<Order>().Where(x => x.EventId == id).FirstAsync();
-                if (order == null)
-                {
-                    return new
-                    {
-                        success = true,
-                        status = MessageStatus.Cancel
-                    };
-                }
-            }
-
-            return new
-            {
-                success = true,
-                status = MessageStatus.Prepare
-            };
-        }
     }
 }

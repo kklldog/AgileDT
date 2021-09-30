@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AgileHttp;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrderService.Data;
@@ -9,6 +10,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using AgileDT.Client;
+using OrderService.Services;
 
 namespace OrderService.Controllers
 {
@@ -17,16 +20,17 @@ namespace OrderService.Controllers
     public class OrderController : ControllerBase
     {
         private readonly ILogger<OrderController> _logger;
+        private readonly IAddOrderService _addOrderService;
 
-        public OrderController(ILogger<OrderController> logger)
+        public OrderController(ILogger<OrderController> logger, IAddOrderService addOrderService)
         {
+            _addOrderService = addOrderService;
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<object> Add([FromBody]Order order)
+        public object Add([FromBody] Order order)
         {
-            //1. 往event_message表写 Prepare 数据
             var bizzMsg = new
             {
                 orderId = order.Id,
@@ -41,37 +45,40 @@ namespace OrderService.Controllers
                 QueryApi = "http://localhost:5010/api/event/query",
                 CreateTime = DateTime.Now
             };
-            FreeSQL.Instance.Insert(eventMsg).ExecuteAffrows();
-
             try
             {
-                //2. 调用可靠消息服务的接口把 prepare 状态传递过去
-                var httpClient = new HttpClient();
-                httpClient.BaseAddress = new Uri("http://localhost:5000");
-                var content = new StringContent(JsonConvert.SerializeObject(eventMsg), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync("/api/message", content);
-                response.EnsureSuccessStatusCode();
+                FreeSQL.Instance.Ado.Transaction(()=> {
+                    //1. 往event_message表写 Prepare 数据
+                    FreeSQL.Instance.Insert(eventMsg).ExecuteAffrows();
+
+                    //2. 调用可靠消息服务的接口把 prepare 状态传递过去
+                    using var resp = "http://localhost:5000/api/message"
+                        .AsHttpClient()
+                        .Config(new RequestOptions
+                        {
+                            ContentType = "application/json"
+                        })
+                        .Post(eventMsg);
+                    if (resp.Exception != null)
+                    {
+                        throw resp.Exception;
+                    }
+                    if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        throw new Exception("send Prepare message to agile_dt_server fail .");
+                    }
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "send message to agile_dt_server fail .");
-                FreeSQL.Instance.Delete<EventMessage>()
-                 .Where(x => x.EventId == eventMsg.EventId)
-                 .ExecuteAffrows();
+                _logger.LogError(ex, "send Prepare message to agile_dt_server fail .");
                 throw;
             }
 
+            //3.dobizz
             try
             {
-                //3. 写 Order 跟 修改 event 的状态必选写在同一个事务内
-                FreeSQL.Instance.Ado.Transaction(() => {
-                    order.EventId = eventMsg.EventId;
-                    FreeSQL.Instance.Insert(order).ExecuteAffrows();
-                    FreeSQL.Instance.Update<EventMessage>()
-                    .Set(x => x.Status, MessageStatus.Done)
-                    .Where(x => x.EventId == eventMsg.EventId)
-                    .ExecuteAffrows();
-                });
+                _addOrderService.AddOrder(order);
             }
             catch (Exception ex)
             {
@@ -85,14 +92,27 @@ namespace OrderService.Controllers
             }
 
             //4. 业务执行成功，发送 done 消息
-            var contentDone = new StringContent(JsonConvert.SerializeObject(new EventMessage { 
+            var doneMsg = new EventMessage
+            {
                 EventId = eventMsg.EventId,
                 Status = MessageStatus.Done
-            }), Encoding.UTF8, "application/json");
-            var httpClientDone = new HttpClient();
-            httpClientDone.BaseAddress = new Uri("http://localhost:5000");
-            var responseDone = await httpClientDone.PostAsync("/api/message", contentDone);
-            responseDone.EnsureSuccessStatusCode();
+            };
+
+            using var resp = "http://localhost:5000/api/message"
+                     .AsHttpClient()
+                     .Config(new RequestOptions
+                     {
+                         ContentType = "application/json"
+                     })
+                     .Post(doneMsg);
+            if (resp.Exception != null)
+            {
+                throw resp.Exception;
+            }
+            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new Exception("send done message to agile_dt_server fail .");
+            }
 
             return new
             {
