@@ -1,3 +1,4 @@
+using AgileDT.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,9 @@ namespace OrderService
         {
             Config.Instance = configuration;
             Configuration = configuration;
+
+            var create = new ClassProxyCreator();
+            var ass = create.CreateProxyAssembly();
         }
 
         public IConfiguration Configuration { get; }

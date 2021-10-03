@@ -14,7 +14,6 @@ namespace OrderService.Services
         bool AddOrder(Order order);
     }
 
-    [DtEvent(eventName: "AddOrder", bizMethodName: "AddOrder")]
     public class AddOrderEventService : IAddOrderService
     {
         private readonly ILogger<AddOrderEventService> _logger;
@@ -28,8 +27,9 @@ namespace OrderService.Services
             get;
             set;
         }
-
-        public bool AddOrder(Order order)
+        
+        [DtEventBizMethod]
+        public virtual bool AddOrder(Order order)
         {
             var ret = false;
 

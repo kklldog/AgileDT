@@ -19,15 +19,8 @@ namespace AgileDT.Client
         MessageStatus QueryEventStatus(string eventId);
     }
 
-    public class DtEventAttribute : Attribute
+    public class DtEventBizMethodAttribute : Attribute
     {
-        public string EventName { get; }
-        public string BizMethodName { get; }
-        public string EventQueryMethodName { get; }
-        public DtEventAttribute(string eventName, string bizMethodName)
-        {
-            EventName = eventName;
-            BizMethodName = bizMethodName;
-        }
     }
+
 }
