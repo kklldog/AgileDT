@@ -11,14 +11,14 @@ namespace AgileDT.Client
         @using 
         using System;
         namespace @ns {
-            public class @newClassName : @sourceClassNAme {
+            public class @newClassName : @sourceClassName {
 
                 @ctrs
 
-                public override bool @bizMethodName (Order order) {
+                @methodName {
                     Console.WriteLine(""before"");
 
-                    var ret = base.@bizMethodName(order);
+                    var ret = base.@bizMethodName(@bizMethodCallParams);
 
                     Console.WriteLine(""after"");
 

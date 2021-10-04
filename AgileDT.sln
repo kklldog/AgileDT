@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService", "OrderServic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemberService", "MemberService\MemberService.csproj", "{669C9CD9-D93D-4E3D-B3BE-EE7B8C96B99D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgileDT.Client", "AgileDT.Client\AgileDT.Client.csproj", "{7E31C453-34B5-49A4-8A16-31ED37468837}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgileDT.Client", "AgileDT.Client\AgileDT.Client.csproj", "{7E31C453-34B5-49A4-8A16-31ED37468837}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgileDT.ClientTests", "AgileDT.ClientTests\AgileDT.ClientTests.csproj", "{2EFC97AC-ABC2-4F2E-A5A7-0CF19B86F626}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{7E31C453-34B5-49A4-8A16-31ED37468837}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E31C453-34B5-49A4-8A16-31ED37468837}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E31C453-34B5-49A4-8A16-31ED37468837}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EFC97AC-ABC2-4F2E-A5A7-0CF19B86F626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EFC97AC-ABC2-4F2E-A5A7-0CF19B86F626}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EFC97AC-ABC2-4F2E-A5A7-0CF19B86F626}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EFC97AC-ABC2-4F2E-A5A7-0CF19B86F626}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -25,10 +25,10 @@ namespace AgileDT.Client
             sharpBuilder.ThrowAndLogCompilerError();
             //如果语法检测时出错，那么抛出并记录日志，该步骤在编译之前。
             sharpBuilder.ThrowAndLogSyntaxError();
-      
+
         }
 
-        string CreateStringClass(Type source)
+        public string CreateStringClass(Type source)
         {
             var ns = source.Namespace;
             var sourceClassName = source.Name;
@@ -37,16 +37,79 @@ namespace AgileDT.Client
             var usingStr0 = CreateUsing(source.GetConstructors());
             var usingStr1 = CreateUsing(bizMethod);
             var ctrs = CreateCtrs(source, newClassName);
+            var method = MethodCodeStype(bizMethod);
 
             var classStr = ClassTemplate.ClassTemp
                 .Replace("@using", usingStr0 + usingStr1)
                 .Replace("@ctrs", ctrs)
                 .Replace("@ns", ns)
-                .Replace("@sourceClassNAme", sourceClassName)
+                .Replace("@methodName", method)
+                .Replace("@sourceClassName", sourceClassName)
                 .Replace("@newClassName", newClassName)
                 .Replace("@bizMethodName", bizMethod.Name);
 
             return classStr;
+        }
+
+        string TypeCodeStyle(Type type)
+        {
+            var typeSb = new StringBuilder();
+            var str = "";
+            if (type.IsGenericType)
+            {
+                var idx = type.Name.IndexOf("`");
+                var paramType = type.Name.Substring(0, idx);
+                var g_args = type.GenericTypeArguments;
+                typeSb.Append("<");
+                foreach (var arg in g_args)
+                {
+                    typeSb.Append(arg.Name + ",");
+                }
+                str = typeSb.ToString().TrimEnd(',');
+                str += ">";
+                str = paramType + type;
+            }
+            else
+            {
+                str = type.Name;
+            }
+
+            return str;
+        }
+
+        /// <summary>
+        /// 把一个方法调用的入参换成代码模式 比如：string name , List<string> names
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        string ParamCodeStyle(ParameterInfo param)
+        {
+            var type = "";
+            var name = "";
+            name = param.Name;
+            type = TypeCodeStyle(param.ParameterType);
+
+            return $"{type} {name},";
+        }
+
+        string MethodCodeStype(MethodInfo method)
+        {
+            var name = method.Name;
+            var str = "public override bool @name(@params)";
+
+            var paramsCode = new StringBuilder();
+
+            foreach (var param in method.GetParameters())
+            {
+                paramsCode.Append(ParamCodeStyle(param) + ",");
+            }
+
+            var paramstr = paramsCode.ToString();
+            paramstr = paramstr.TrimEnd(',');
+
+            return str
+                .Replace("@name", name)
+                .Replace("@params", paramstr);
         }
 
         string CreateCtrs(Type source, string newClassName)
@@ -55,40 +118,21 @@ namespace AgileDT.Client
             var ctrsSb = new StringBuilder();
             foreach (var item in ctrs)
             {
-                var paramS = item.GetParameters();
+                var methodParams = item.GetParameters();
                 var str = $"public {newClassName} ( @params ) @baseCtr " +
                     $"{{}}";
 
-                var paramsSb = new StringBuilder();
-                var baseCallParams = new StringBuilder(":base(");
-                foreach (var param in paramS)
+                var ctrCodeSb = new StringBuilder();
+                var baseCtrCallParams = new StringBuilder(":base(");
+                foreach (var param in methodParams)
                 {
-                    var type = "";
-                    if (!param.ParameterType.IsGenericType)
-                    {
-                        type = param.ParameterType.Name;
-                    }
-                    else{
-                        var idx = param.ParameterType.Name.IndexOf("`");
-                        var paramType = param.ParameterType.Name.Substring(0, idx);
-                        var g_args = param.ParameterType.GenericTypeArguments;
-                        type = "<";
-                        foreach (var arg in g_args)
-                        {
-                            type += arg.Name + ",";
-                        }
-                        type = type.TrimEnd(',');
-                        type += ">";
-                        type = paramType + type;
-                    }
-                    var name = param.Name;
-                    paramsSb.AppendFormat("{0} {1},", type, name);
-                    baseCallParams.AppendFormat("{0},", name);
+                    ctrCodeSb.AppendFormat(ParamCodeStyle(param));
+                    baseCtrCallParams.AppendFormat("{0},", param.Name);
                 }
-                var paramsStr = paramsSb.ToString().TrimEnd(',');
-                var baseCallParamStr = baseCallParams.ToString().TrimEnd(',') + ")";
-                str = str.Replace("@params", paramsStr)
-                        .Replace("@baseCtr", baseCallParamStr);
+                var ctrCodeStr = ctrCodeSb.ToString().TrimEnd(',');
+                var baseCtrCallParamsStr = baseCtrCallParams.ToString().TrimEnd(',') + ")";
+                str = str.Replace("@params", ctrCodeStr)
+                        .Replace("@baseCtr", baseCtrCallParamsStr);
 
                 ctrsSb.AppendLine(str);
             }
@@ -144,7 +188,8 @@ namespace AgileDT.Client
 
         public Assembly CreateProxyAssembly(List<Type> sources)
         {
-            sources.ForEach(x => { 
+            sources.ForEach(x =>
+            {
                 var classStr = CreateStringClass(x);
                 sharpBuilder.Add(classStr);
             });
