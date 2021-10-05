@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Linq;
 
 namespace AgileDT.Client
 {
@@ -46,7 +47,8 @@ namespace AgileDT.Client
                 .Replace("@methodName", method)
                 .Replace("@sourceClassName", sourceClassName)
                 .Replace("@newClassName", newClassName)
-                .Replace("@bizMethodName", bizMethod.Name);
+                .Replace("@bizMethodName", bizMethod.Name)
+                .Replace("@bizMethodCallParams", string.Join(',', bizMethod.GetParameters().Select(x => x.Name).ToArray()));
 
             return classStr;
         }
@@ -67,7 +69,7 @@ namespace AgileDT.Client
                 }
                 str = typeSb.ToString().TrimEnd(',');
                 str += ">";
-                str = paramType + type;
+                str = paramType + str;
             }
             else
             {
