@@ -31,10 +31,8 @@ namespace OrderService.Controllers
         [HttpPost]
         public object Add([FromBody] Order order)
         {
-            //3.dobizz
+            //3.do bizz
             _addOrderService.AddOrder(order);
-
-            
 
             return new
             {

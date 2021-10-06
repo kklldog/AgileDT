@@ -6,17 +6,11 @@ namespace AgileDT.Client
 
     public class DtEventBizMethodAttribute : Attribute
     {
-        private string _eventId;
-        private IEventService _currentServie;
+        private DtEventContext _dtEventContext;
 
-        public string GetEventId()
+        public void SetContext(DtEventContext context)
         {
-            return _eventId;
-        }
-
-        public void SetService(IEventService service)
-        {
-            _currentServie = service;
+            _dtEventContext = context;
         }
 
         private string ServerBaseUrl
@@ -36,7 +30,7 @@ namespace AgileDT.Client
 
             var eventMsg = new EventMessage
             {
-                EventId = Guid.NewGuid().ToString(),
+                EventId = _dtEventContext.EventId,
                 Status = MessageStatus.Prepare,
                 BizMsg = "",
                 CreateTime = DateTime.Now
@@ -64,8 +58,6 @@ namespace AgileDT.Client
                     {
                         throw new Exception("send Prepare message to agile_dt_server fail .");
                     }
-
-                    _eventId = eventMsg.EventId;
                 });
             }
             catch (Exception)
@@ -81,9 +73,9 @@ namespace AgileDT.Client
             //4. 业务执行成功，发送 done 消息
             var doneMsg = new EventMessage
             {
-                EventId = _eventId,
+                EventId = _dtEventContext.EventId,
                 Status = MessageStatus.Done,
-                BizMsg = _currentServie.GetBizMsg()
+                BizMsg = _dtEventContext.Service.GetBizMsg()
             };
 
             using var resp = (ServerBaseUrl + "/api/message")

@@ -35,10 +35,6 @@ namespace AgileDT.Client
                     return FreeSql.DataType.MySql;
                 case "sqlserver":
                     return FreeSql.DataType.SqlServer;
-                case "npgsql":
-                    return FreeSql.DataType.PostgreSQL;
-                case "oracle":
-                    return FreeSql.DataType.Oracle;
                 default:
                     break;
             }

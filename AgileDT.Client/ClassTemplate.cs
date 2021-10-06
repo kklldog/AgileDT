@@ -17,10 +17,10 @@ namespace AgileDT.Client
                 @ctrs
 
                public override @returnType @methodName {
+                    var context = new DtEventContext(this);
                     var atr = AgileDT.Client.Helper.GetDtEventBizMethodAttribute(typeof(@sourceClassName));
-                    atr.SetService(this);
+                    atr.SetContext(context);
                     atr.Before();
-                    this.EventId = atr.GetEventId();
                     @returnType ret;
                     try
                     {
@@ -28,12 +28,13 @@ namespace AgileDT.Client
                     }
                     catch
                     {
-                        const string sql = ""update[EVENT_MESSAGE] set[STATUS] = @status where event_id = @id "";
-                        FREESQL.Instance.Ado.ExecuteNonQuery(sql, new
-                        {
-                            id = EventId,
-                            status = AgileDT.Client.MessageStatus.Cancel
-                        });
+                        if(Guid.TryParse(EventId,out Guid id)) {
+                             string sql = ""delete from event_message where event_id = '""+EventId+""' "";
+                                                    FREESQL.Instance.Ado.ExecuteNonQuery(sql, new
+                                                    {
+                                                    });
+                        }
+                       
 
                         throw;
                     }
