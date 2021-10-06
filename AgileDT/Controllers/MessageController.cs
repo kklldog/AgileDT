@@ -35,10 +35,9 @@ namespace AgileDT.Controllers
                 var handler = MessageHandler.GetHandler(model.Status);
                 handler.Handler(new EventMessage
                 {
-                    BizzMsg = model.BizzMsg,
+                    BizMsg = model.BizMsg,
                     EventId = model.EventId,
                     Status = model.Status,
-                    QueryApi = model.QueryApi,
                     CreateTime = model.CreateTime
                 });
 

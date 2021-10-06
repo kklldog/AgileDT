@@ -14,7 +14,7 @@ namespace AgileDT.Client
         {
             NatashaInitializer.Initialize();
             //使用 Natasha 的 CSharp 编译器直接编译字符串
-            sharpBuilder = new AssemblyCSharpBuilder();
+            sharpBuilder = new AssemblyCSharpBuilder("agiledt_proxy_lib");
 
             //给编译器指定一个随机域
             sharpBuilder.Compiler.Domain = DomainManagement.Random;
@@ -31,19 +31,27 @@ namespace AgileDT.Client
 
         public string CreateStringClass(Type source)
         {
+            var bizMethod = Helper.GetBizMethod(source);
+            if (!bizMethod.IsVirtual)
+            {
+                throw new Exception("business method is not a virtual method .");
+            }
             var ns = source.Namespace;
             var sourceClassName = source.Name;
-            var newClassName = sourceClassName + "_Proxy";
-            var bizMethod = Helper.GetBizMethod(source);
+            var newClassName = sourceClassName + "_agiledt_proxy";
+            var returnType = bizMethod.ReturnType;
             var usingStr0 = CreateUsing(source.GetConstructors());
             var usingStr1 = CreateUsing(bizMethod);
+            var usingStr2 = new StringBuilder();
+            CreateUsing(returnType , usingStr2);
             var ctrs = CreateCtrs(source, newClassName);
             var method = MethodCodeStype(bizMethod);
 
             var classStr = ClassTemplate.ClassTemp
-                .Replace("@using", usingStr0 + usingStr1)
+                .Replace("@using", usingStr0 + usingStr1 + usingStr2)
                 .Replace("@ctrs", ctrs)
                 .Replace("@ns", ns)
+                .Replace("@returnType", CreateReutrunType(returnType))
                 .Replace("@methodName", method)
                 .Replace("@sourceClassName", sourceClassName)
                 .Replace("@newClassName", newClassName)
@@ -51,6 +59,18 @@ namespace AgileDT.Client
                 .Replace("@bizMethodCallParams", string.Join(',', bizMethod.GetParameters().Select(x => x.Name).ToArray()));
 
             return classStr;
+        }
+
+        string CreateReutrunType(Type returnType)
+        {
+            var name = TypeCodeStyle(returnType);
+
+            if (name == "Void")
+            {
+                name = "void";
+            }
+
+            return name;
         }
 
         string TypeCodeStyle(Type type)
@@ -65,7 +85,8 @@ namespace AgileDT.Client
                 typeSb.Append("<");
                 foreach (var arg in g_args)
                 {
-                    typeSb.Append(arg.Name + ",");
+                    var name = TypeCodeStyle(arg);
+                    typeSb.Append(name + ",");
                 }
                 str = typeSb.ToString().TrimEnd(',');
                 str += ">";
@@ -97,13 +118,13 @@ namespace AgileDT.Client
         string MethodCodeStype(MethodInfo method)
         {
             var name = method.Name;
-            var str = "public override bool @name(@params)";
+            var str = "@name(@params)";
 
             var paramsCode = new StringBuilder();
 
             foreach (var param in method.GetParameters())
             {
-                paramsCode.Append(ParamCodeStyle(param) + ",");
+                paramsCode.Append(ParamCodeStyle(param));
             }
 
             var paramstr = paramsCode.ToString();
@@ -142,16 +163,33 @@ namespace AgileDT.Client
             return ctrsSb.ToString();
         }
 
+        StringBuilder CreateUsing(Type type, StringBuilder sb)
+        {
+            var ns = type.Namespace;
+            sb.AppendLine($"using {ns};");
+            if (!type.IsGenericType)
+            {
+                // to do 
+            }
+            else
+            {
+                foreach (var item in type.GetGenericArguments())
+                {
+                    CreateUsing(item, sb);
+                }
+            }
+
+            return sb;
+        }
+
         string CreateUsing(MethodInfo method)
         {
-            var callParams = method.GetParameters();
             var sb = new StringBuilder();
+            var callParams = method.GetParameters();
             foreach (var item in callParams)
             {
                 var type = item.ParameterType;
-                var ns = type.Namespace;
-
-                sb.AppendLine($"using {ns};");
+                CreateUsing(type, sb);
             }
 
             return sb.ToString();
@@ -165,16 +203,7 @@ namespace AgileDT.Client
                 var paramS = item.GetParameters();
                 foreach (var param in paramS)
                 {
-                    var ns = param.ParameterType.Namespace;
-                    sb.AppendLine($"using {ns};");
-                    if (param.ParameterType.IsGenericType)
-                    {
-                        var gTypes = param.ParameterType.GetGenericArguments();
-                        foreach (var gType in gTypes)
-                        {
-                            sb.AppendLine($"using {gType.Namespace};");
-                        }
-                    }
+                    CreateUsing(param.ParameterType, sb);
                 }
             }
 

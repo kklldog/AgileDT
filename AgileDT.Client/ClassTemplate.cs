@@ -10,20 +10,40 @@ namespace AgileDT.Client
             @"
         @using 
         using System;
+        using AgileDT.Client;
         namespace @ns {
             public class @newClassName : @sourceClassName {
 
                 @ctrs
 
-                @methodName {
-                    Console.WriteLine(""before"");
+               public override @returnType @methodName {
+                    var atr = AgileDT.Client.Helper.GetDtEventBizMethodAttribute(typeof(@sourceClassName));
+                    atr.SetService(this);
+                    atr.Before();
+                    this.EventId = atr.GetEventId();
+                    @returnType ret;
+                    try
+                    {
+                        ret = base.@bizMethodName(@bizMethodCallParams);
+                    }
+                    catch
+                    {
+                        const string sql = ""update[EVENT_MESSAGE] set[STATUS] = @status where event_id = @id "";
+                        FREESQL.Instance.Ado.ExecuteNonQuery(sql, new
+                        {
+                            id = EventId,
+                            status = AgileDT.Client.MessageStatus.Cancel
+                        });
 
-                    var ret = base.@bizMethodName(@bizMethodCallParams);
+                        throw;
+                    }
 
-                    Console.WriteLine(""after"");
+
+                    atr.After();
 
                     return ret;
                 }
+           
             }
         }
         ";

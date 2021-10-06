@@ -1,25 +1,45 @@
 ﻿
 //using Microsoft.Extensions.Logging;
+//using OrderService.Services;
 //using OrderService.Data.entities;
+//using System;
 
 //using System;
+//using AgileDT.Client;
 //namespace OrderService.Services
 //{
-//    public class AddOrderEventService_Proxy : AddOrderEventService
+//    public class AddOrderEventService_agiledt_proxy : AddOrderEventService
 //    {
 
-//        public AddOrderEventService_Proxy(ILogger<AddOrderEventService> logger) : base(logger) { }
+//        public AddOrderEventService_agiledt_proxy(ILogger<AddOrderEventService> logger) : base(logger) { }
 
 
-//        public override bool AddOrder(Order order)
+//        public override Boolean AddOrder(Order order)
 //        {
-//            Console.WriteLine("before");
+//            var atr = Helper.GetDtEventBizMethodAttribute(typeof(AddOrderEventService));
+//            atr.Before();
 
-//            var ret = base.AddOrder(order);
+//            Boolean ret;
+//            try
+//            {
+//                ret = base.AddOrder(order);
+//            }
+//            catch
+//            {
+//                const string sql = "update [EVENT_MESSAGE] set [STATUS] = @status where event_id = @id ";
+//                FREESQL.Instance.Ado.ExecuteNonQuery(sql, new
+//                {
+//                    id = EventId,
+//                    status = MessageStatus.Cancel
+//                });
 
-//            Console.WriteLine("after");
+//                throw;
+//            }
+
+//            atr.After();
 
 //            return ret;
 //        }
+
 //    }
 //}

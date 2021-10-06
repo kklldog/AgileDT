@@ -63,36 +63,36 @@ namespace AgileDT.Tasks
                 _logger.LogInformation($"start to check event {et.EventId} status .");
                 try
                 {
-                    var query = et.QueryApi.AppendQueryString("id", et.EventId);
-                    using var resp = query.AsHttp().Send();
-                    dynamic result = resp.Deserialize<QueryResult>();
-                    if (result.success)
-                    {
-                        var status = result.status;
-                        _logger.LogInformation($"remote api response event {et.EventId} status is {status} .");
+                    //var query = et.QueryApi.AppendQueryString("id", et.EventId);
+                    //using var resp = query.AsHttp().Send();
+                    //dynamic result = resp.Deserialize<QueryResult>();
+                    //if (result.success)
+                    //{
+                    //    var status = result.status;
+                    //    _logger.LogInformation($"remote api response event {et.EventId} status is {status} .");
 
-                        if (status == MessageStatus.Prepare)
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            et.Status = status;
-                            var ret = FreeSQL.Instance.Update<EventMessage>()
-                                .Set(x => x.Status, et.Status)
-                                .Where(x => x.EventId == et.EventId && x.Status == MessageStatus.Prepare)
-                                .ExecuteAffrows();
+                    //    if (status == MessageStatus.Prepare)
+                    //    {
+                    //        continue;
+                    //    }
+                    //    else
+                    //    {
+                    //        et.Status = status;
+                    //        var ret = FreeSQL.Instance.Update<EventMessage>()
+                    //            .Set(x => x.Status, et.Status)
+                    //            .Where(x => x.EventId == et.EventId && x.Status == MessageStatus.Prepare)
+                    //            .ExecuteAffrows();
 
-                            if (ret > 0)
-                            {
-                                _logger.LogInformation($"Update event {et.EventId} status to {et.Status} .");
-                            }
-                        }
-                    }
+                    //        if (ret > 0)
+                    //        {
+                    //            _logger.LogInformation($"Update event {et.EventId} status to {et.Status} .");
+                    //        }
+                    //    }
+                    //}
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"check event {et.EventId} prepare status fail , url {et.QueryApi.AppendQueryString("id", et.EventId)}");
+                    //_logger.LogError(ex, $"check event {et.EventId} prepare status fail , url {et.QueryApi.AppendQueryString("id", et.EventId)}");
                 }
             }
         }

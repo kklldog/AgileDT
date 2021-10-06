@@ -43,7 +43,7 @@ namespace AgileDT.MessageQueue
         public static void Push(EventMessage eventMesssage)
         {
             var json = JsonConvert.SerializeObject(new { 
-                eventMesssage.BizzMsg,
+                eventMesssage.BizMsg,
                 eventMesssage.EventId
             });
 

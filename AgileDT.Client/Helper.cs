@@ -8,9 +8,9 @@ namespace AgileDT.Client
 {
     public class Helper
     {
-        public static List<Type> ScanAll()
+        internal static List<Type> ScanAll()
         {
-            var ieventT = typeof(IEvent);
+            var ieventT = typeof(IEventService);
             var ass =  AppDomain.CurrentDomain.GetAssemblies();
 
             var list = new List<Type>();
@@ -33,7 +33,7 @@ namespace AgileDT.Client
             return t.Name;
         }
 
-        internal static MethodInfo GetBizMethod(Type t)
+        public static MethodInfo GetBizMethod(Type t)
         {
             var methods = t.GetMethods();
             foreach (var item in methods)
@@ -46,6 +46,14 @@ namespace AgileDT.Client
             }
 
             return null;
+        }
+
+        public static DtEventBizMethodAttribute GetDtEventBizMethodAttribute(Type t)
+        {
+            var method = AgileDT.Client.Helper.GetBizMethod(t);
+            var attr = method.GetCustomAttribute<DtEventBizMethodAttribute>();
+
+            return attr;
         }
     }
 }

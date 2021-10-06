@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OrderService.Services
 {
-    public interface IAddOrderService:IEvent
+    public interface IAddOrderService:IEventService
     {
         bool AddOrder(Order order);
     }
@@ -36,7 +36,7 @@ namespace OrderService.Services
             //3. 写 Order 跟 修改 event 的状态必选写在同一个事务内
             FreeSQL.Instance.Ado.Transaction(() =>
             {
-                order.EventId = EventId;
+                order.EventId = EventId;//在订单表新增一个eventid字段，使order跟event_message表关联起来
                 var ret0 = FreeSQL.Instance.Insert(order).ExecuteAffrows();
                 var ret1 = FreeSQL.Instance.Update<EventMessage>()
                 .Set(x => x.Status, MessageStatus.Done)
@@ -48,6 +48,17 @@ namespace OrderService.Services
 
             return ret;
 
+        }
+
+        /// <summary>
+        /// 构造后续业务处理需要的消息内容
+        /// </summary>
+        /// <returns></returns>
+        public string GetBizMsg()
+        {
+            //这里可以构造传递到MQ的业务消息的内容，比如传递订单编号啊 ,以便后续的被动方处理业务时候使用
+            var order = FreeSQL.Instance.Select<Order>().Where(x => x.EventId == EventId).First();
+            return order?.Id;
         }
 
         public MessageStatus QueryEventStatus(string eventId)

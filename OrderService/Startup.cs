@@ -20,8 +20,6 @@ namespace OrderService
             Config.Instance = configuration;
             Configuration = configuration;
 
-            var create = new ClassProxyCreator();
-            var ass = create.CreateProxyAssembly();
         }
 
         public IConfiguration Configuration { get; }
@@ -29,7 +27,7 @@ namespace OrderService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddAgileDT(Configuration);
             services.AddControllers();
         }
 

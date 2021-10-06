@@ -22,14 +22,11 @@ namespace AgileDT.Data.Entites
         [Column(Name = "event_id", StringLength = 36, IsPrimary =true)]
         public string EventId { get; set; }
 
-        [Column(Name = "bizz_msg", StringLength = 4000)]
-        public string BizzMsg { get; set; }
+        [Column(Name = "biz_msg", StringLength = 4000)]
+        public string BizMsg { get; set; }
 
         [Column(Name = "status")]
         public MessageStatus Status { get; set; }
-
-        [Column(Name = "query_api", StringLength = 1000)]
-        public string QueryApi { get; set; }
 
         [Column(Name = "create_time")]
         public DateTime? CreateTime { get; set; }

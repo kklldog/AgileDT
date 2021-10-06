@@ -1,26 +1,107 @@
-﻿using System;
+﻿using AgileHttp;
+using System;
 
 namespace AgileDT.Client
 {
-    public enum MessageStatus
-    {
-        Cancel = -1,
-        Prepare = 0,
-        Done = 1,
-        WaitSend = 2,
-        Sent = 3,
-        Finish = 4
-    }
-
-    public interface IEvent
-    {
-        string EventId { get; set; }
-
-        MessageStatus QueryEventStatus(string eventId);
-    }
 
     public class DtEventBizMethodAttribute : Attribute
     {
+        private string _eventId;
+        private IEventService _currentServie;
+
+        public string GetEventId()
+        {
+            return _eventId;
+        }
+
+        public void SetService(IEventService service)
+        {
+            _currentServie = service;
+        }
+
+        private string ServerBaseUrl
+        {
+            get
+            {
+                var agiledtServer = Config.Instance["agiledt:server"];
+                agiledtServer = agiledtServer.TrimEnd('/');
+
+                return agiledtServer;
+            }
+        }
+
+        public virtual void Before()
+        {
+            Console.WriteLine("DtEventBizMethodAttribute Before");
+
+            var eventMsg = new EventMessage
+            {
+                EventId = Guid.NewGuid().ToString(),
+                Status = MessageStatus.Prepare,
+                BizMsg = "",
+                CreateTime = DateTime.Now
+            };
+            try
+            {
+                FREESQL.Instance.Ado.Transaction(() =>
+                {
+                    //1. 往event_message表写 Prepare 数据
+                    FREESQL.Instance.Insert(eventMsg).ExecuteAffrows();
+
+                    //2. 调用可靠消息服务的接口把 prepare 状态传递过去
+                    using var resp = (ServerBaseUrl + "/api/message")
+                        .AsHttpClient()
+                        .Config(new RequestOptions
+                        {
+                            ContentType = "application/json"
+                        })
+                        .Post(eventMsg);
+                    if (resp.Exception != null)
+                    {
+                        throw resp.Exception;
+                    }
+                    if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        throw new Exception("send Prepare message to agile_dt_server fail .");
+                    }
+
+                    _eventId = eventMsg.EventId;
+                });
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public virtual  void After()
+        {
+            Console.WriteLine("DtEventBizMethodAttribute After");
+
+            //4. 业务执行成功，发送 done 消息
+            var doneMsg = new EventMessage
+            {
+                EventId = _eventId,
+                Status = MessageStatus.Done,
+                BizMsg = _currentServie.GetBizMsg()
+            };
+
+            using var resp = (ServerBaseUrl + "/api/message")
+                     .AsHttpClient()
+                     .Config(new RequestOptions
+                     {
+                         ContentType = "application/json"
+                     })
+                     .Post(doneMsg);
+            if (resp.Exception != null)
+            {
+                throw resp.Exception;
+            }
+            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new Exception("send done message to agile_dt_server fail .");
+            }
+        }
     }
 
 }

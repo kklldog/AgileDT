@@ -9,14 +9,18 @@ namespace AgileDT.Client.Tests
     [TestClass()]
     public class ClassProxyCreatorTests
     {
-        public class Test1:IEvent
+        public class Test1: IEventService
         {
             public string EventId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
             [DtEventBizMethod]
-            public bool Add(string str)
+            public virtual void Add(string str)
             {
-                return true;
+            }
+
+            public string GetBizMsg()
+            {
+                throw new NotImplementedException();
             }
 
             public MessageStatus QueryEventStatus(string eventId)
@@ -25,14 +29,19 @@ namespace AgileDT.Client.Tests
             }
         }
 
-        public class Test2: IEvent
+        public class Test2: IEventService
         {
             public string EventId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
             [DtEventBizMethod]
-            public bool Add(List<string> str)
+            public virtual int Add(List<string> str)
             {
-                return true;
+                return 0;
+            }
+
+            public string GetBizMsg()
+            {
+                throw new NotImplementedException();
             }
 
             public MessageStatus QueryEventStatus(string eventId)
@@ -41,7 +50,7 @@ namespace AgileDT.Client.Tests
             }
         }
 
-        public class Test3 : IEvent
+        public class Test3 : IEventService
         {
             public Test3(string str)
             {
@@ -51,9 +60,14 @@ namespace AgileDT.Client.Tests
             public string EventId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
             [DtEventBizMethod]
-            public bool Add(List<string> str)
+            public virtual object Add(List<string> str)
             {
                 return true;
+            }
+
+            public string GetBizMsg()
+            {
+                throw new NotImplementedException();
             }
 
             public MessageStatus QueryEventStatus(string eventId)
@@ -62,7 +76,7 @@ namespace AgileDT.Client.Tests
             }
         }
 
-        public class Test4 : IEvent
+        public class Test4 : IEventService
         {
             public Test4(List<string> str)
             {
@@ -72,9 +86,14 @@ namespace AgileDT.Client.Tests
             public string EventId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
             [DtEventBizMethod]
-            public bool Add(List<string> str)
+            public virtual string Add(List<string> str)
             {
-                return true;
+                return "";
+            }
+
+            public string GetBizMsg()
+            {
+                throw new NotImplementedException();
             }
 
             public MessageStatus QueryEventStatus(string eventId)
@@ -83,7 +102,7 @@ namespace AgileDT.Client.Tests
             }
         }
 
-        public class Test5 : IEvent
+        public class Test5 : IEventService
         {
             public Test5(List<string> str,int a)
             {
@@ -93,9 +112,114 @@ namespace AgileDT.Client.Tests
             public string EventId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
             [DtEventBizMethod]
-            public bool Add(List<string> str)
+            public virtual Test1 Add(List<string> str)
+            {
+                return null;
+            }
+
+            public string GetBizMsg()
+            {
+                throw new NotImplementedException();
+            }
+
+            public MessageStatus QueryEventStatus(string eventId)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public class Test6 : IEventService
+        {
+            public Test6(List<string> str, int a)
+            {
+
+            }
+
+            public string EventId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+            [DtEventBizMethod]
+            public virtual Test2 Add(List<string> str,int a , List<int> b)
+            {
+                return null;
+            }
+
+            public string GetBizMsg()
+            {
+                throw new NotImplementedException();
+            }
+
+            public MessageStatus QueryEventStatus(string eventId)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public class Test7 : IEventService
+        {
+            public Test7(List<List<string>> str)
+            {
+            }
+
+            public string EventId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+            [DtEventBizMethod]
+            public virtual List<string> Add(List<string> str)
+            {
+                return null;
+            }
+
+            public string GetBizMsg()
+            {
+                throw new NotImplementedException();
+            }
+
+            public MessageStatus QueryEventStatus(string eventId)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public class Test8 : IEventService
+        {
+            public Test8(List<List<string>> str, List<int> a, Dictionary<string,int> b, string c)
+            {
+            }
+            public string EventId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+            [DtEventBizMethod]
+            public virtual Action<Test1, Test2> Add(List<string> str)
+            {
+                return null
+                    ;
+            }
+
+            public string GetBizMsg()
+            {
+                throw new NotImplementedException();
+            }
+
+            public MessageStatus QueryEventStatus(string eventId)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public class Test9 : IEventService
+        {
+            public Test9(List<List<string>> str, List<int> a, Dictionary<string, int> b, string c)
+            {
+            }
+            public string EventId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+            [DtEventBizMethod]
+            public virtual bool Add(List<List<string>> str, List<int> a, Dictionary<string, int> b, string c)
             {
                 return true;
+            }
+
+            public string GetBizMsg()
+            {
+                throw new NotImplementedException();
             }
 
             public MessageStatus QueryEventStatus(string eventId)
@@ -123,6 +247,18 @@ namespace AgileDT.Client.Tests
 
             var classStr5 = creator.CreateStringClass(typeof(Test5));
             Console.WriteLine(classStr5);
+
+            var classStr6 = creator.CreateStringClass(typeof(Test6));
+            Console.WriteLine(classStr6);
+
+            var classStr7 = creator.CreateStringClass(typeof(Test7));
+            Console.WriteLine(classStr7);
+
+            var classStr8 = creator.CreateStringClass(typeof(Test8));
+            Console.WriteLine(classStr8);
+
+            var classStr9 = creator.CreateStringClass(typeof(Test9));
+            Console.WriteLine(classStr9);
         }
     }
 }

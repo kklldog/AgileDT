@@ -10,11 +10,9 @@ namespace AgileDT.models
     {
         public string EventId { get; set; }
 
-        public string BizzMsg { get; set; }
+        public string BizMsg { get; set; }
 
         public MessageStatus Status { get; set; }
-
-        public string QueryApi { get; set; }
 
         public DateTime? CreateTime { get; set; }
     }
