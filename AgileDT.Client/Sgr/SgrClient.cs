@@ -48,7 +48,7 @@ namespace AgileDT.Client.Sgr
             return _connection?.StartAsync();
         }
 
-        public void AddMessageHandler(MessageHandler handler)
+        public void AddMessageHandler(IMessageHandler handler)
         {
             _connection.On<string>(handler.Type, ( message) =>
             {
@@ -64,6 +64,14 @@ namespace AgileDT.Client.Sgr
             }
 
             return Task.CompletedTask;
+        }
+
+        public bool Connected
+        {
+            get
+            {
+                return _connection?.State == HubConnectionState.Connected;
+            }
         }
 
         public static string ServerBaseUrl
