@@ -1,6 +1,8 @@
 ﻿using AgileDT.Data;
 using AgileDT.Data.Entites;
+using AgileDT.Hubs;
 using AgileHttp;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -21,10 +23,12 @@ namespace AgileDT.Tasks
         }
 
         private readonly ILogger<CheckPrepareEvents> _logger;
+        private readonly IHubContext<MessageHub> _hub;
 
-        public CheckPrepareEvents(ILogger<CheckPrepareEvents> logger)
+        public CheckPrepareEvents(ILogger<CheckPrepareEvents> logger, IHubContext<MessageHub> hub)
         {
             _logger = logger;
+            _hub = hub;
         }
         public Task StartAsync(CancellationToken cancellationToken)
         {
@@ -63,32 +67,7 @@ namespace AgileDT.Tasks
                 _logger.LogInformation($"start to check event {et.EventId} status .");
                 try
                 {
-                    //var query = et.QueryApi.AppendQueryString("id", et.EventId);
-                    //using var resp = query.AsHttp().Send();
-                    //dynamic result = resp.Deserialize<QueryResult>();
-                    //if (result.success)
-                    //{
-                    //    var status = result.status;
-                    //    _logger.LogInformation($"remote api response event {et.EventId} status is {status} .");
-
-                    //    if (status == MessageStatus.Prepare)
-                    //    {
-                    //        continue;
-                    //    }
-                    //    else
-                    //    {
-                    //        et.Status = status;
-                    //        var ret = FreeSQL.Instance.Update<EventMessage>()
-                    //            .Set(x => x.Status, et.Status)
-                    //            .Where(x => x.EventId == et.EventId && x.Status == MessageStatus.Prepare)
-                    //            .ExecuteAffrows();
-
-                    //        if (ret > 0)
-                    //        {
-                    //            _logger.LogInformation($"Update event {et.EventId} status to {et.Status} .");
-                    //        }
-                    //    }
-                    //}
+                    _hub.Clients.All.SendAsync("QueryStatus", et.EventId);
                 }
                 catch (Exception ex)
                 {

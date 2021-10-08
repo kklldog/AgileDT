@@ -1,4 +1,5 @@
 using AgileDT.Data;
+using AgileDT.Hubs;
 using AgileDT.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,8 @@ namespace AgileDT
             services.AddHostedService<CheckPrepareEvents>();
             services.AddHostedService<MessageReSend>();
 
+            services.AddSignalR();
+
             services.AddControllers();
         }
 
@@ -48,6 +51,7 @@ namespace AgileDT
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<MessageHub>("/sgr/hub/message");
             });
         }
     }

@@ -1,7 +1,9 @@
 ﻿using AgileDT.Client;
+using AgileDT.Client.Sgr;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AgileDT.Client
@@ -11,6 +13,8 @@ namespace AgileDT.Client
         public static void AddAgileDT(this IServiceCollection serviceCollection, IConfiguration config)
         {
             Config.Instance = config;
+
+            var eventNames = new List<string>();
 
             var classCreator = new ClassProxyCreator();
             var ass = classCreator.CreateProxyAssembly();
@@ -27,7 +31,10 @@ namespace AgileDT.Client
                 }
 
                 serviceCollection.AddScoped(it, type);
+                eventNames.Add(type.Name.TrimEnd("_agiledt_proxy".ToArray()));
             }
+
+            serviceCollection.AddHostedService<DtHostedService>();
         }
     }
 }
