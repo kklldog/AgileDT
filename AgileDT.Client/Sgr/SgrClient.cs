@@ -21,7 +21,7 @@ namespace AgileDT.Client.Sgr
         {
             _connection = new HubConnectionBuilder()
             .WithUrl(new Uri($"{ServerBaseUrl}/sgr/hub/message"))
-            .WithAutomaticReconnect()
+            .WithAutomaticReconnect(new RetryPolicy())
             .Build();
 
             _connection.Closed += async (error) =>
@@ -33,6 +33,10 @@ namespace AgileDT.Client.Sgr
 
             _connection.Reconnected += async (str) => {
                 Console.WriteLine("signalR Reconnected .");
+                if (ClientConnected != null)
+                {
+                    await ClientConnected();
+                }
                 await Task.CompletedTask;
             };
 
@@ -43,10 +47,16 @@ namespace AgileDT.Client.Sgr
 
         }
 
-        public Task ConnectAsync()
+        public async Task ConnectAsync()
         {
-            return _connection?.StartAsync();
+            await _connection?.StartAsync();
+            if (ClientConnected != null)
+            {
+                await ClientConnected();
+            }
         }
+
+        public event Func<Task> ClientConnected;
 
         public void AddMessageHandler(IMessageHandler handler)
         {
@@ -56,7 +66,7 @@ namespace AgileDT.Client.Sgr
             });
         }
 
-        public Task SendMessageToHub(string method, object message)
+        public Task SendMessageToHub(string method, string message)
         {
             if (_connection.State == HubConnectionState.Connected)
             {

@@ -6,37 +6,56 @@ using System.Threading.Tasks;
 
 namespace AgileDT.Hubs
 {
-    public class AgileDtClient
-    {
-        public string Id { get; set; }
-
-        public string GroupName { get; set; }
-    }
-
     public class ClientCollection
     {
-        private static ConcurrentDictionary<string, AgileDtClient> _clientMap = new ConcurrentDictionary<string, AgileDtClient>();
-
-        public static void Add(AgileDtClient client)
+        private static Dictionary<string, List<string>> _clientMap = new Dictionary<string, List<string>>();
+        private static object _lock = new object();
+        public static void Add(string eventName, string connectionId)
         {
-            _clientMap.TryAdd(client.Id, client);
+            lock (_lock)
+            {
+                if (_clientMap.ContainsKey(eventName))
+                {
+                    var arr = _clientMap[eventName];
+                    if (arr.Contains(connectionId))
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        arr.Add(connectionId);
+                    }
+                }
+                else
+                {
+                    _clientMap[eventName] = new List<string> { connectionId };
+                }
+            }
         }
 
-        public static void Remove(string clientId)
+        public static void Remove(string connectionId)
         {
-            _clientMap.TryRemove(clientId, out AgileDtClient client);
+            lock (_lock)
+            {
+                foreach (var lst in _clientMap.Values)
+                {
+                    if (lst.Contains(connectionId))
+                    {
+                        lst.Remove(connectionId);
+                        break;
+                    }
+                }
+            }
         }
 
-        public static AgileDtClient Get(string clientId)
+        public static List<string> GetGroupClients(string group)
         {
-            _clientMap.TryGetValue(clientId, out AgileDtClient client);
+            if (_clientMap.ContainsKey(group))
+            {
+                return _clientMap[group];
+            }
 
-            return client;
-        }
-
-        public static List<AgileDtClient> GetGroupClients(string group)
-        {
-            return _clientMap.Values.Where(x => x.GroupName == group).ToList();
+            return new List<string>();
         }
     }
 }

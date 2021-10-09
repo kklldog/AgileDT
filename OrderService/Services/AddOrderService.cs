@@ -15,11 +15,11 @@ namespace OrderService.Services
         bool AddOrder(Order order);
     }
 
-    public class AddOrderEventService : IAddOrderService
+    public class AddOrderService : IAddOrderService
     {
-        private readonly ILogger<AddOrderEventService> _logger;
+        private readonly ILogger<AddOrderService> _logger;
 
-        public AddOrderEventService(ILogger<AddOrderEventService> logger)
+        public AddOrderService(ILogger<AddOrderService> logger)
         {
             _logger = logger;
         }
@@ -61,37 +61,6 @@ namespace OrderService.Services
             var order = FreeSQL.Instance.Select<Order>().Where(x => x.EventId == EventId).First();
             return order?.Id;
         }
-
-        public MessageStatus QueryEventStatus(string eventId)
-        {
-            var eventMsg = FreeSQL.Instance.Select<EventMessage>().Where(x => x.EventId == eventId).First();
-
-            if (eventMsg == null || eventMsg.Status == MessageStatus.Cancel)
-            {
-                return MessageStatus.Cancel;
-            }
-
-            if (eventMsg.Status == MessageStatus.Done)
-            {
-                return MessageStatus.Done;
-            }
-
-            if (eventMsg.Status == MessageStatus.Prepare)
-            {
-                if ((DateTime.Now - eventMsg.CreateTime.Value).TotalSeconds > 60)
-                {
-                    //如果 prepare 状态大于60s，直接认为已经取消
-                    return MessageStatus.Cancel;
-                }
-
-                var order = FreeSQL.Instance.Select<Order>().Where(x => x.EventId == EventId).First();
-                if (order == null)
-                {
-                    return MessageStatus.Cancel;
-                }
-            }
-
-            return MessageStatus.Prepare;
-        }
+      
     }
 }

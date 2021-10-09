@@ -7,6 +7,20 @@ namespace AgileDT.Client
 
     public class DtEventBizMethodAttribute : Attribute
     {
+        private string _eventName;
+        public DtEventBizMethodAttribute(string eventName="")
+        {
+            _eventName = eventName;
+        }
+
+        public string EventName
+        {
+            get
+            {
+                return _eventName;
+            }
+        }
+
         private DtEventContext _dtEventContext;
 
         public void SetContext(DtEventContext context)
@@ -34,7 +48,8 @@ namespace AgileDT.Client
                 EventId = _dtEventContext.EventId,
                 Status = MessageStatus.Prepare,
                 BizMsg = "",
-                CreateTime = DateTime.Now
+                CreateTime = DateTime.Now,
+                EventName = _dtEventContext.Service.GetType().GetEventName()
             };
             try
             {

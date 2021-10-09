@@ -19,7 +19,7 @@ namespace AgileDT.Data.Entites
     [Table(Name = "event_message")]
     public class EventMessage
     {
-        [Column(Name = "event_id", StringLength = 36, IsPrimary =true)]
+        [Column(Name = "event_id", StringLength = 36, IsPrimary = true)]
         public string EventId { get; set; }
 
         [Column(Name = "biz_msg", StringLength = 4000)]

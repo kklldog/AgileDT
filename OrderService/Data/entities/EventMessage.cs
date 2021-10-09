@@ -20,10 +20,10 @@ namespace OrderService.Data.entities
         [Column(Name = "status")]
         public MessageStatus Status { get; set; }
 
-        [Column(Name = "query_api", StringLength = 1000)]
-        public string QueryApi { get; set; }
-
         [Column(Name = "create_time")]
         public DateTime? CreateTime { get; set; }
+
+        [Column(Name = "event_name")]
+        public string EventName { get; set; }
     }
 }

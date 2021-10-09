@@ -21,7 +21,14 @@ namespace AgileDT.Client
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             SgrClient.Instance.AddMessageHandler(new QueryStatusMessageHandler());
-
+            SgrClient.Instance.ClientConnected += async ()=>{
+                _logger.LogInformation("signalR client connect to hub successful .");
+                var types = ServiceProxyManager.Instance.GetSourceTypes();
+                foreach (var type in types)
+                {
+                    await SgrClient.Instance.SendMessageToHub("RegisterEvent", type.GetEventName());
+                }
+            };
             try
             {
                 await SgrClient.Instance.ConnectAsync();
@@ -31,12 +38,7 @@ namespace AgileDT.Client
                 _logger.LogError(ex, "Try to connect signalR hub err . ");
                 throw;
             }
-            _logger.LogInformation("signalR client connect to hub successful .");
-            var types = ServiceProxyManager.Instance.GetSourceTypes();
-            foreach (var type in types)
-            {
-                await SgrClient.Instance.SendMessageToHub("RegisterEvent", type.Name);
-            }
+            
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

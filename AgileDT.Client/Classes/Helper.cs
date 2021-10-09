@@ -18,7 +18,8 @@ namespace AgileDT.Client.Classes
             {
                 foreach (var t in ab.GetTypes())
                 {
-                    if (t.IsClass && ieventT.IsAssignableFrom(t))
+                    var method = GetBizMethod(t);
+                    if (method != null && t.IsClass && ieventT.IsAssignableFrom(t))
                     {
                         list.Add(t);
                     }
@@ -50,7 +51,7 @@ namespace AgileDT.Client.Classes
 
         public static DtEventBizMethodAttribute GetDtEventBizMethodAttribute(Type t)
         {
-            var method = Helper.GetBizMethod(t);
+            var method = GetBizMethod(t);
             var attr = method.GetCustomAttribute<DtEventBizMethodAttribute>();
 
             return attr;

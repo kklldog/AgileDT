@@ -38,7 +38,8 @@ namespace AgileDT.Controllers
                     BizMsg = model.BizMsg,
                     EventId = model.EventId,
                     Status = model.Status,
-                    CreateTime = model.CreateTime
+                    CreateTime = model.CreateTime,
+                    EventName = model.EventName
                 });
 
                 return new

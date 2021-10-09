@@ -30,5 +30,8 @@ namespace AgileDT.Client.Data
 
         [Column(Name = "create_time")]
         public DateTime? CreateTime { get; set; }
+
+        [Column(Name = "event_name")]
+        public string EventName { get; set; }
     }
 }

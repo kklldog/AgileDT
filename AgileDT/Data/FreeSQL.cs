@@ -10,7 +10,6 @@ namespace AgileDT.Data
     public static class FreeSQL
     {
         private static IFreeSql _freesql;
-        private static object _lockobj = new object();
 
         static FreeSQL()
         {
@@ -18,6 +17,14 @@ namespace AgileDT.Data
                  .UseConnectionString(ProviderToFreesqlDbType(DbProvider), DbConnection)
                  .Build();
             _freesql.CodeFirst.SyncStructure<EventMessage>();
+            _freesql.Aop.CurdAfter += Aop_CurdAfter;
+        }
+
+        private static void Aop_CurdAfter(object sender, FreeSql.Aop.CurdAfterEventArgs e)
+        {
+#if DEBUG
+            Console.WriteLine(e.Sql);
+#endif
         }
 
         public static IFreeSql Instance

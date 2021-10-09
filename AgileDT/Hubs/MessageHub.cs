@@ -1,5 +1,8 @@
-﻿using AgileDT.MessageQueue;
+﻿using AgileDT.Data;
+using AgileDT.Data.Entites;
+using AgileDT.MessageQueue;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,39 +14,46 @@ namespace AgileDT.Hubs
     {
         public override Task OnConnectedAsync()
         {
-            ClientCollection.Add(new AgileDtClient()
-            {
-                Id = Context.ConnectionId
-            });
+            Console.WriteLine("MessageHub add a client .");
 
             return base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
+            Console.WriteLine("MessageHub remove a client .");
+
             ClientCollection.Remove(Context.ConnectionId);
 
             return base.OnDisconnectedAsync(exception);
         }
 
-        public Task ReturnQueryStatusResult(int status)
+        public async Task ReturnQueryStatusResult(string message)
         {
-            Console.WriteLine($"Hub receive message type:ReturnQueryStatusResult message:{status}");
+            Console.WriteLine($"Hub receive message type:ReturnQueryStatusResult message:{message}");
 
-            return Task.CompletedTask;
+            dynamic dy = JsonConvert.DeserializeObject<dynamic>(message);
+            string id = dy.id;
+            int status = dy.status;
+
+            var eventMsg = FreeSQL.Instance.Select<EventMessage>().Where(x => x.EventId == id).ToOne();
+            if (eventMsg != null)
+            {
+                await FreeSQL.Instance.Update<EventMessage>()
+                    .Set(x => x.Status, (MessageStatus)status)
+                    .Where(x => x.EventId == id)
+                    .ExecuteAffrowsAsync();
+            }
+
         }
 
-        public async Task RegisterEvent(string eventName)
+        public Task RegisterEvent(string eventName)
         {
             Console.WriteLine($"Hub receive message type:RegisterEvent message:{eventName}");
-
-            var client = ClientCollection.Get(Context.ConnectionId);
-            if (client != null)
-            {
-                client.GroupName = eventName;
-                await Groups.AddToGroupAsync(Context.ConnectionId, eventName);
-            }
+            ClientCollection.Add(eventName, Context.ConnectionId);
             MQ.BindQueue(eventName);
+
+            return Task.CompletedTask;
         }
     }
 }

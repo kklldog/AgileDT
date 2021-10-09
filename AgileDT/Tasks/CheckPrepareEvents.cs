@@ -5,6 +5,7 @@ using AgileHttp;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,10 +58,13 @@ namespace AgileDT.Tasks
 
         private void Check()
         {
+            _logger.LogInformation($"start to check  prepare events.");
+
+            var dt = DateTime.Now.AddSeconds(-10);
             var events = FreeSQL.Instance
                 .Select<EventMessage>()
                 // 获取10s之前的prepare的任务
-                .Where(x => x.Status == MessageStatus.Prepare && x.CreateTime < DateTime.Now.AddSeconds(-10))
+                .Where(x => x.Status == MessageStatus.Prepare && x.CreateTime < dt)
                 .ToList();
             foreach (var et in events)
             {
@@ -68,7 +72,14 @@ namespace AgileDT.Tasks
                 try
                 {
                     var client = ClientCollection.GetGroupClients(et.EventName).FirstOrDefault();
-                    _hub.Clients.Client(client.Id).SendAsync("QueryStatus", et.EventId);
+                    if (client != null)
+                    {
+                        _hub.Clients.Client(client).SendAsync("QueryStatus", JsonConvert.SerializeObject(new
+                        {
+                            id = et.EventId,
+                            eventName = et.EventName
+                        }));
+                    }
                 }
                 catch (Exception ex)
                 {
