@@ -1,8 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AgileDT.Client;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using AgileDT.Client.Data;
 
 namespace AgileDT.Client.Tests
 {

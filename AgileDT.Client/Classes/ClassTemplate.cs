@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AgileDT.Client
+namespace AgileDT.Client.Classes
 {
     class ClassTemplate
     {

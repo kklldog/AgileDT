@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Text;
 using System.Linq;
 
-namespace AgileDT.Client
+namespace AgileDT.Client.Classes
 {
     public class Helper
     {
@@ -50,7 +50,7 @@ namespace AgileDT.Client
 
         public static DtEventBizMethodAttribute GetDtEventBizMethodAttribute(Type t)
         {
-            var method = AgileDT.Client.Helper.GetBizMethod(t);
+            var method = Helper.GetBizMethod(t);
             var attr = method.GetCustomAttribute<DtEventBizMethodAttribute>();
 
             return attr;

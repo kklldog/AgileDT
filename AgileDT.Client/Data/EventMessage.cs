@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AgileDT.Client
+namespace AgileDT.Client.Data
 {
     public enum MessageStatus
     {

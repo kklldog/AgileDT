@@ -1,4 +1,4 @@
-﻿using AgileDT.Client;
+﻿using AgileDT.Client.Data;
 using FreeSql.DataAnnotations;
 using System;
 using System.Collections.Generic;

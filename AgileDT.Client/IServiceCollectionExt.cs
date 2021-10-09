@@ -1,4 +1,5 @@
 ﻿using AgileDT.Client;
+using AgileDT.Client.Classes;
 using AgileDT.Client.Sgr;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,5 @@
-﻿using AgileDT.Client.Sgr;
+﻿using AgileDT.Client.Classes;
+using AgileDT.Client.Sgr;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

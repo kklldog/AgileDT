@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Linq;
 
-namespace AgileDT.Client
+namespace AgileDT.Client.Classes
 {
     public class ClassProxyCreator
     {

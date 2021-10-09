@@ -1,4 +1,5 @@
-﻿using AgileHttp;
+﻿using AgileDT.Client.Data;
+using AgileHttp;
 using System;
 
 namespace AgileDT.Client
