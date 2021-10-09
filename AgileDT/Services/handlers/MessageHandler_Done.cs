@@ -28,6 +28,7 @@ namespace AgileDT.Services.handlers
                 .Where(x => x.EventId == message.EventId)
                 .ExecuteAffrows();
             //try to send msg to mq
+            msg = FreeSQL.Instance.Select<EventMessage>().Where(x => x.EventId == message.EventId).ToOne();
             SendMsgToMQAndUpdateStatusSent(msg);
         }
 

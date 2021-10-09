@@ -47,10 +47,11 @@ namespace AgileDT.Tasks
 
         private void TryResend()
         {
+            var dt = DateTime.Now.AddSeconds(-30);
             var events = FreeSQL.Instance
                 .Select<EventMessage>()
                 // 获取30s后还处在待发送跟已发送未确认的消息
-                .Where(x => (x.Status == MessageStatus.WaitSend || x.Status == MessageStatus.Sent) && x.CreateTime < DateTime.Now.AddSeconds(-30))
+                .Where(x => (x.Status == MessageStatus.WaitSend || x.Status == MessageStatus.Sent) && x.CreateTime < dt)
                 .ToList();
             foreach (var et in events)
             {
