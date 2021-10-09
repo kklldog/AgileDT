@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using AgileDT.Client.Classes;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,6 +9,13 @@ namespace AgileDT.Client.Sgr
 {
     public class QueryStatusMessageHandler : IMessageHandler
     {
+        IServiceProvider _serviceProvider;
+
+        public QueryStatusMessageHandler(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public string Type => "QueryStatus";
         public void Handle(string message)
         {
@@ -17,7 +26,23 @@ namespace AgileDT.Client.Sgr
             string eventName = dy.eventName;
             string id = dy.id;
 
-            var status = new DefaultEventService().QueryEventStatus(id);
+
+            IEventService service = null;
+            var sourceType = ServiceProxyManager.Instance.FindSourceTypeByEventName(eventName);
+            if (sourceType == null)
+            {
+                service = new DefaultEventService();
+            }
+            else
+            {
+                var itf = ServiceProxyManager.Instance.FindInterfaceBySourceType(sourceType);
+                using var sc = _serviceProvider.CreateScope();
+                var obj = sc.ServiceProvider.GetRequiredService(itf);
+
+                service = obj as IEventService;
+            }
+
+            var status = service.QueryEventStatus(id);
 
             Console.WriteLine($"QueryEventStatus id:{id} status:{status} ");
 

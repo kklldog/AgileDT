@@ -17,6 +17,8 @@ namespace AgileDT.Client.Classes
         private List<Type> _newTypes = new List<Type>();
 
         private Dictionary<Type, Type> _interfaceProxiesMap = new Dictionary<Type, Type>();
+        private Dictionary<Type, Type> _interfaceSourceTypeMap = new Dictionary<Type, Type>();
+
 
         private ServiceProxyManager() { }
 
@@ -52,7 +54,19 @@ namespace AgileDT.Client.Classes
                 }
 
                 _sourceInterfaces.Add(it);
-                _interfaceProxiesMap.Add(it,type);
+                _interfaceProxiesMap.Add(type,it);
+            }
+
+            foreach (var type in _sourceTypes)
+            {
+                var ites = type.GetInterfaces();
+                var it = ites.FirstOrDefault(x => ieventT.IsAssignableFrom(x));
+                if (it == null)
+                {
+                    continue;
+                }
+
+                _interfaceSourceTypeMap.Add(type, it);
             }
 
             return ass;
@@ -92,6 +106,42 @@ namespace AgileDT.Client.Classes
         public Dictionary<Type,Type> GetInterfaceProxyMap()
         {
             return _interfaceProxiesMap;
+        }
+
+
+        /// <summary>
+        /// 根据事件名称查找原始类
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <returns></returns>
+        public Type FindSourceTypeByEventName(string eventName)
+        {
+            foreach (var item in _sourceTypes)
+            {
+                var attr = Helper.GetDtEventBizMethodAttribute(item);
+                if (attr.EventName == eventName)
+                {
+                    return item;
+                }
+                if (item.Name == eventName)
+                {
+                    return item;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 根据原始类型查找对应的接口
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public Type FindInterfaceBySourceType(Type source)
+        {
+            _interfaceSourceTypeMap.TryGetValue(source, out Type interf);
+
+            return interf;
         }
     }
 }

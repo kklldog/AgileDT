@@ -19,7 +19,7 @@ namespace AgileDT.Client
 
             foreach (var item in proxyMap)
             {
-                serviceCollection.AddScoped(item.Key, item.Value);
+                serviceCollection.AddScoped(item.Value, item.Key);
             }
 
             serviceCollection.AddHostedService<DtHostedService>();

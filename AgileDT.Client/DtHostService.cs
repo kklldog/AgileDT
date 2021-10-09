@@ -14,13 +14,15 @@ namespace AgileDT.Client
     public class DtHostedService : IHostedService
     {
         ILogger<DtHostedService> _logger;
-        public DtHostedService(ILogger<DtHostedService> logger){
+        IServiceProvider _serviceProvider;
+        public DtHostedService(ILogger<DtHostedService> logger, IServiceProvider serviceProvider){
             _logger = logger;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            SgrClient.Instance.AddMessageHandler(new QueryStatusMessageHandler());
+            SgrClient.Instance.AddMessageHandler(new QueryStatusMessageHandler(_serviceProvider));
             SgrClient.Instance.ClientConnected += async ()=>{
                 _logger.LogInformation("signalR client connect to hub successful .");
                 var types = ServiceProxyManager.Instance.GetSourceTypes();
