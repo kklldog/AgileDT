@@ -1,5 +1,5 @@
 ﻿using AgileDT.Data;
-using AgileDT.Data.Entites;
+using AgileDT.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

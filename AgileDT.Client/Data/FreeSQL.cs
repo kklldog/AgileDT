@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AgileDT.Client.Data
 {
-    public static class FREESQL
+    internal static class FREESQL
     {
         private static IFreeSql _freesql;
 
@@ -14,6 +14,9 @@ namespace AgileDT.Client.Data
             _freesql = new FreeSql.FreeSqlBuilder()
                  .UseConnectionString(ProviderToFreesqlDbType(DbProvider), DbConnection)
                  .Build();
+#if DEBUG
+            _freesql.CodeFirst.SyncStructure<EventMessage>();
+#endif
         }
 
         public static IFreeSql Instance

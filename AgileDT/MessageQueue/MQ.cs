@@ -1,4 +1,4 @@
-﻿using AgileDT.Data.Entites;
+﻿using AgileDT.Data.Entities;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -19,11 +19,17 @@ namespace AgileDT.MessageQueue
 
         static MQ()
         {
+            int port = 5672;
+            if (int.TryParse(Config.Instance["mq:port"], out int p))
+            {
+                port = p;
+            }
             ConnectionFactory = new ConnectionFactory
             {
                 UserName = Config.Instance["mq:userName"],//用户名
                 Password = Config.Instance["mq:password"],//密码
-                HostName = Config.Instance["mq:host"]//rabbitmq ip
+                HostName = Config.Instance["mq:host"],//rabbitmq ip
+                Port = port
             };
             //创建连接
             Connection  = ConnectionFactory.CreateConnection();
@@ -44,10 +50,7 @@ namespace AgileDT.MessageQueue
 
         public static void Push(EventMessage eventMesssage, string queueName)
         {
-            var json = JsonConvert.SerializeObject(new { 
-                eventMesssage.BizMsg,
-                eventMesssage.EventId
-            });
+            var json = JsonConvert.SerializeObject(eventMesssage);
 
             var sendBytes = Encoding.UTF8.GetBytes(json);
             //发布消息

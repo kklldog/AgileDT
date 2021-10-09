@@ -17,7 +17,7 @@ namespace AgileDT.Client.Data
     }
 
     [Table(Name = "event_message")]
-    internal class EventMessage
+    public class EventMessage
     {
         [Column(Name = "event_id", StringLength = 36, IsPrimary = true)]
         public string EventId { get; set; }

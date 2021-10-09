@@ -15,6 +15,7 @@ namespace OrderService.Services
         bool AddOrder(Order order);
     }
 
+    [DtEventName("orderservice.order_added")]
     public class AddOrderService : IAddOrderService
     {
         private readonly ILogger<AddOrderService> _logger;
@@ -39,7 +40,7 @@ namespace OrderService.Services
             {
                 order.EventId = EventId;//在订单表新增一个eventid字段，使order跟event_message表关联起来
                 var ret0 = FreeSQL.Instance.Insert(order).ExecuteAffrows();
-                var ret1 = FreeSQL.Instance.Update<EventMessage>()
+                var ret1 = FreeSQL.Instance.Update<OrderService.Data.entities.EventMessage>()
                 .Set(x => x.Status, MessageStatus.Done)
                 .Where(x => x.EventId == EventId)
                 .ExecuteAffrows();

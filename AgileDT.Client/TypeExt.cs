@@ -9,7 +9,7 @@ namespace AgileDT.Client
     {
         public static string GetEventName(this Type t)
         {
-            var attr = Helper.GetDtEventBizMethodAttribute(t);
+            var attr = Helper.GetDtEventNameAttribute(t);
 
             if (attr != null)
             {

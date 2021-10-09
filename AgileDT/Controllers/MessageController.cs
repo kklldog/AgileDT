@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AgileDT.models;
 using AgileDT.Services;
-using AgileDT.Data.Entites;
+using AgileDT.Data.Entities;
 using Newtonsoft.Json;
 
 namespace AgileDT.Controllers

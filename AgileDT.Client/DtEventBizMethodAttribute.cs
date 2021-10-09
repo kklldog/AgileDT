@@ -4,23 +4,9 @@ using System;
 
 namespace AgileDT.Client
 {
-
+    [AttributeUsage(AttributeTargets.Method)]
     public class DtEventBizMethodAttribute : Attribute
     {
-        private string _eventName;
-        public DtEventBizMethodAttribute(string eventName="")
-        {
-            _eventName = eventName;
-        }
-
-        public string EventName
-        {
-            get
-            {
-                return _eventName;
-            }
-        }
-
         private DtEventContext _dtEventContext;
 
         public void SetContext(DtEventContext context)

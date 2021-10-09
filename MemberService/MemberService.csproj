@@ -11,4 +11,12 @@
     <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AgileDT.Client\AgileDT.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MessageQueue\" />
+  </ItemGroup>
+
 </Project>

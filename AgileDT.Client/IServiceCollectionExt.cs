@@ -16,12 +16,21 @@ namespace AgileDT.Client
             Config.Instance = config;
             ServiceProxyManager.Instance.ScanAndBuild();
             var proxyMap = ServiceProxyManager.Instance.GetInterfaceProxyMap();
-
             foreach (var item in proxyMap)
             {
+                //注册接口跟事件代理类到ioc容器
                 serviceCollection.AddScoped(item.Value, item.Key);
+                Console.WriteLine($"add scoped {item.Value} => {item.Key}");
             }
 
+            var messageHandlerMap = Consumer.ConsumerRegister.GetInterfaceTypeMap();
+            foreach (var item in messageHandlerMap)
+            {
+                //注册接口跟messageHandler的实现类到ioc容器
+                serviceCollection.AddScoped(item.Value, item.Key);
+                Console.WriteLine($"add scoped {item.Value} => {item.Key}");
+            }
+            //注册启动服务
             serviceCollection.AddHostedService<DtHostedService>();
         }
     }

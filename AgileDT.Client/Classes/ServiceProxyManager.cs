@@ -37,7 +37,7 @@ namespace AgileDT.Client.Classes
             _newTypes.Clear();
             _interfaceProxiesMap.Clear();
 
-            _sourceTypes = Helper.ScanAll();
+            _sourceTypes = Helper.ScanAllEventService();
 
             var ass = _classProxyCreator.CreateProxyAssembly(_sourceTypes);
 
@@ -118,7 +118,7 @@ namespace AgileDT.Client.Classes
         {
             foreach (var item in _sourceTypes)
             {
-                var attr = Helper.GetDtEventBizMethodAttribute(item);
+                var attr = Helper.GetDtEventNameAttribute(item);
                 if (attr.EventName == eventName)
                 {
                     return item;

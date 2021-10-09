@@ -18,8 +18,10 @@ namespace OrderService.Data
             _freesql = new FreeSql.FreeSqlBuilder()
                  .UseConnectionString(ProviderToFreesqlDbType(DbProvider), DbConnection)
                  .Build();
+#if DEBUG
             _freesql.CodeFirst.SyncStructure<EventMessage>();
             _freesql.CodeFirst.SyncStructure<Order>();
+#endif
         }
 
         public static IFreeSql Instance

@@ -1,4 +1,5 @@
 ﻿using AgileDT.Client.Classes;
+using AgileDT.Client.Consumer;
 using AgileDT.Client.Sgr;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.Extensions.Hosting;
@@ -22,7 +23,9 @@ namespace AgileDT.Client
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            //注册主动方状态的Handler
             SgrClient.Instance.AddMessageHandler(new QueryStatusMessageHandler(_serviceProvider));
+            //长连接建立后注册主动方会发起的事件到AgileDt Server
             SgrClient.Instance.ClientConnected += async ()=>{
                 _logger.LogInformation("signalR client connect to hub successful .");
                 var types = ServiceProxyManager.Instance.GetSourceTypes();
@@ -31,16 +34,24 @@ namespace AgileDT.Client
                     await SgrClient.Instance.SendMessageToHub("RegisterEvent", type.GetEventName());
                 }
             };
-            try
-            {
-                await SgrClient.Instance.ConnectAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Try to connect signalR hub err . ");
-                throw;
-            }
-            
+            //异步开始连接 signalr hub ，为了不阻塞程序启动
+            _ = Task.Run(async ()=> {
+                while (true)
+                {
+                    try
+                    {
+                        await SgrClient.Instance.ConnectAsync();
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Try to connect signalR hub err . ");
+                    }
+                    await Task.Delay(1000);
+                }
+            });
+            //注册消息的消费服务，绑定MQ对应的队列
+            new ConsumerRegister(_serviceProvider).Register();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

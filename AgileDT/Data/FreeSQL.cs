@@ -1,4 +1,4 @@
-﻿using AgileDT.Data.Entites;
+﻿using AgileDT.Data.Entities;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
