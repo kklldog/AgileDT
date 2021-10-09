@@ -11,9 +11,8 @@ namespace AgileDT.Client
 {
     public static class ServiceCollectionExt
     {
-        public static void AddAgileDT(this IServiceCollection serviceCollection, IConfiguration config)
+        public static void AddAgileDT(this IServiceCollection serviceCollection)
         {
-            Config.Instance = config;
             ServiceProxyManager.Instance.ScanAndBuild();
             var proxyMap = ServiceProxyManager.Instance.GetInterfaceProxyMap();
             foreach (var item in proxyMap)

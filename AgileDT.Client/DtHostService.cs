@@ -2,6 +2,7 @@
 using AgileDT.Client.Consumer;
 using AgileDT.Client.Sgr;
 using Microsoft.CodeAnalysis.Host;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,7 +17,8 @@ namespace AgileDT.Client
     {
         ILogger<DtHostedService> _logger;
         IServiceProvider _serviceProvider;
-        public DtHostedService(ILogger<DtHostedService> logger, IServiceProvider serviceProvider){
+        public DtHostedService(ILogger<DtHostedService> logger, IServiceProvider serviceProvider, IConfiguration config){
+            Config.Instance = config;
             _logger = logger;
             _serviceProvider = serviceProvider;
         }

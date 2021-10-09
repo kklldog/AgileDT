@@ -35,7 +35,7 @@ namespace AgileDT.Client.Consumer
                 var eventName = item.Key.GetEventName();
                 var itf = item.Value;
 
-                var sc = _serviceProvider.CreateScope();
+                using var sc = _serviceProvider.CreateScope();
                 var obj = sc.ServiceProvider.GetRequiredService(itf);
                 var imp = obj as IEventMessageHandler;
 
