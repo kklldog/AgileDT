@@ -9,12 +9,12 @@ namespace AgileDT.Client.Classes
 {
     public class ClassProxyCreator
     {
-        static AssemblyCSharpBuilder sharpBuilder;
-        static ClassProxyCreator()
+        AssemblyCSharpBuilder sharpBuilder;
+        public ClassProxyCreator(string libName)
         {
             NatashaInitializer.Initialize();
             //使用 Natasha 的 CSharp 编译器直接编译字符串
-            sharpBuilder = new AssemblyCSharpBuilder("agiledt_proxy_lib");
+            sharpBuilder = new AssemblyCSharpBuilder(libName);
 
             //给编译器指定一个随机域
             sharpBuilder.Compiler.Domain = DomainManagement.Random;
@@ -61,7 +61,7 @@ namespace AgileDT.Client.Classes
             return classStr;
         }
 
-        string CreateReutrunType(Type returnType)
+        string  CreateReutrunType(Type returnType)
         {
             var name = TypeCodeStyle(returnType);
 
@@ -208,13 +208,6 @@ namespace AgileDT.Client.Classes
             }
 
             return sb.ToString();
-        }
-
-        public Assembly CreateProxyAssembly()
-        {
-            var types = Helper.ScanAll();
-
-            return CreateProxyAssembly(types);
         }
 
         public Assembly CreateProxyAssembly(List<Type> sources)

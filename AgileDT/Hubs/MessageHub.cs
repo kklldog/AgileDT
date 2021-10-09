@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using AgileDT.MessageQueue;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,18 +9,41 @@ namespace AgileDT.Hubs
 {
     public class MessageHub : Hub
     {
+        public override Task OnConnectedAsync()
+        {
+            ClientCollection.Add(new AgileDtClient()
+            {
+                Id = Context.ConnectionId
+            });
+
+            return base.OnConnectedAsync();
+        }
+
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            ClientCollection.Remove(Context.ConnectionId);
+
+            return base.OnDisconnectedAsync(exception);
+        }
+
         public Task ReturnQueryStatusResult(int status)
         {
-            Console.WriteLine($"hub receive message type:ReturnQueryStatusResult message:{status}");
+            Console.WriteLine($"Hub receive message type:ReturnQueryStatusResult message:{status}");
 
             return Task.CompletedTask;
         }
 
-        public Task RegisterEvent(string eventName)
+        public async Task RegisterEvent(string eventName)
         {
-            Console.WriteLine($"hub receive message type:RegisterEvent message:{eventName}");
+            Console.WriteLine($"Hub receive message type:RegisterEvent message:{eventName}");
 
-            return Task.CompletedTask;
+            var client = ClientCollection.Get(Context.ConnectionId);
+            if (client != null)
+            {
+                client.GroupName = eventName;
+                await Groups.AddToGroupAsync(Context.ConnectionId, eventName);
+            }
+            MQ.BindQueue(eventName);
         }
     }
 }

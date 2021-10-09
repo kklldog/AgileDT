@@ -16,8 +16,6 @@ namespace AgileDT.MessageQueue
         static IModel Model;
 
         const string ExName = "ex_agile_dt";
-        const string QueueName = "q_agile_dt";
-        const string QueueKey = "k_agile_dt";
 
         static MQ()
         {
@@ -33,14 +31,18 @@ namespace AgileDT.MessageQueue
             Model = Connection.CreateModel();
             //定义一个Direct类型交换机
             Model.ExchangeDeclare(ExName, ExchangeType.Direct, false, false, null);
-            //定义一个队列
-            Model.QueueDeclare(QueueName, false, false, false, null);
-
-            //将队列绑定到交换机
-            Model.QueueBind(QueueName, ExName, QueueKey, null);
+           
         }
 
-        public static void Push(EventMessage eventMesssage)
+        public static void BindQueue(string queueName)
+        {
+            //定义一个队列
+            Model.QueueDeclare(queueName, false, false, false, null);
+            //将队列绑定到交换机
+            Model.QueueBind(queueName, ExName, queueName, null);
+        }
+
+        public static void Push(EventMessage eventMesssage, string queueName)
         {
             var json = JsonConvert.SerializeObject(new { 
                 eventMesssage.BizMsg,
@@ -49,7 +51,7 @@ namespace AgileDT.MessageQueue
 
             var sendBytes = Encoding.UTF8.GetBytes(json);
             //发布消息
-            Model.BasicPublish(ExName, QueueKey, null, sendBytes);
+            Model.BasicPublish(ExName, queueName, null, sendBytes);
         }
     }
 }

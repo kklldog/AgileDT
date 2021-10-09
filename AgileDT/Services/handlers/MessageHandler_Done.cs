@@ -24,7 +24,7 @@ namespace AgileDT.Services.handlers
             //直接设置为状态为 waitsend ，数据库里其实不需要 done 这个状态
             FreeSQL.Instance.Update<EventMessage>()
                 .Set(x => x.Status, MessageStatus.WaitSend)
-                .Set(x=>x.BizMsg, message.BizMsg)
+                .Set(x => x.BizMsg, message.BizMsg)
                 .Where(x => x.EventId == message.EventId)
                 .ExecuteAffrows();
             //try to send msg to mq
@@ -33,7 +33,8 @@ namespace AgileDT.Services.handlers
 
         public void SendMsgToMQAndUpdateStatusSent(EventMessage msg)
         {
-            FreeSQL.Instance.Ado.Transaction(()=> {
+            FreeSQL.Instance.Ado.Transaction(() =>
+            {
                 FreeSQL.Instance.Update<EventMessage>().Set(x => x.Status, MessageStatus.Sent).Where(x => x.EventId == msg.EventId)
                                 .ExecuteAffrows();
                 SendMsgToMQ(msg);
@@ -42,7 +43,7 @@ namespace AgileDT.Services.handlers
 
         private void SendMsgToMQ(EventMessage msg)
         {
-            MQ.Push(msg);
+            MQ.Push(msg, msg.EventName);
         }
     }
 }

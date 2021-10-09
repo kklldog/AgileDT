@@ -57,7 +57,7 @@ namespace AgileDT.Tasks
                 _logger.LogInformation($"start to resend event {et.EventId} to mq .");
                 try
                 {
-                    MQ.Push(et);
+                    MQ.Push(et, et.EventName);
                 }
                 catch (Exception ex)
                 {

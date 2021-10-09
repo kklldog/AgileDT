@@ -6,7 +6,7 @@ namespace AgileDT.Client.Classes
 {
     class ClassTemplate
     {
-        public static string ClassTemp =
+        public const string ClassTemp =
             @"
         @using 
         using System;
@@ -18,7 +18,7 @@ namespace AgileDT.Client.Classes
 
                public override @returnType @methodName {
                     var context = new DtEventContext(this);
-                    var atr = AgileDT.Client.Helper.GetDtEventBizMethodAttribute(typeof(@sourceClassName));
+                    var atr = AgileDT.Client.Classes.Helper.GetDtEventBizMethodAttribute(typeof(@sourceClassName));
                     atr.SetContext(context);
                     atr.Before();
                     @returnType ret;
@@ -30,7 +30,7 @@ namespace AgileDT.Client.Classes
                     {
                         if(Guid.TryParse(EventId,out Guid id)) {
                              string sql = ""delete from event_message where event_id = '""+EventId+""' "";
-                                                    FREESQL.Instance.Ado.ExecuteNonQuery(sql, new
+                                                    AgileDT.Client.Data.FREESQL.Instance.Ado.ExecuteNonQuery(sql, new
                                                     {
                                                     });
                         }

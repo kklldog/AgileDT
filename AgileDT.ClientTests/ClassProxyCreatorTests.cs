@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using AgileDT.Client.Data;
+using AgileDT.Client.Classes;
 
 namespace AgileDT.Client.Tests
 {
@@ -232,7 +233,7 @@ namespace AgileDT.Client.Tests
         [TestMethod()]
         public void CreateStringClassTest()
         {
-            var creator = new ClassProxyCreator();
+            var creator = new ClassProxyCreator("testlib");
             var classStr = creator.CreateStringClass(typeof(Test1));
             Console.WriteLine(classStr);
 

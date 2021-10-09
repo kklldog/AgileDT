@@ -14,25 +14,12 @@ namespace AgileDT.Client
         public static void AddAgileDT(this IServiceCollection serviceCollection, IConfiguration config)
         {
             Config.Instance = config;
+            ServiceProxyManager.Instance.ScanAndBuild();
+            var proxyMap = ServiceProxyManager.Instance.GetInterfaceProxyMap();
 
-            var eventNames = new List<string>();
-
-            var classCreator = new ClassProxyCreator();
-            var ass = classCreator.CreateProxyAssembly();
-
-            var ieventT = typeof(IEventService);
-            var types = ass.GetTypes();
-            foreach (var type in types)
+            foreach (var item in proxyMap)
             {
-                var ites = type.GetInterfaces();
-                var it = ites.FirstOrDefault(x => ieventT.IsAssignableFrom(x));
-                if (it == null)
-                {
-                    continue;
-                }
-
-                serviceCollection.AddScoped(it, type);
-                eventNames.Add(type.Name.TrimEnd("_agiledt_proxy".ToArray()));
+                serviceCollection.AddScoped(item.Key, item.Value);
             }
 
             serviceCollection.AddHostedService<DtHostedService>();

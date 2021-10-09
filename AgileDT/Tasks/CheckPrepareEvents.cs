@@ -67,11 +67,12 @@ namespace AgileDT.Tasks
                 _logger.LogInformation($"start to check event {et.EventId} status .");
                 try
                 {
-                    _hub.Clients.All.SendAsync("QueryStatus", et.EventId);
+                    var client = ClientCollection.GetGroupClients(et.EventName).FirstOrDefault();
+                    _hub.Clients.Client(client.Id).SendAsync("QueryStatus", et.EventId);
                 }
                 catch (Exception ex)
                 {
-                    //_logger.LogError(ex, $"check event {et.EventId} prepare status fail , url {et.QueryApi.AppendQueryString("id", et.EventId)}");
+                    _logger.LogError(ex, $"check event {et.EventId} prepare status fail , id {et.EventId}");
                 }
             }
         }
