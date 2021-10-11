@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>0.0.1.1</Version>
+    <Version>0.0.1.2</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageTags></PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>修复业务方法返回值为void的时候生成代理类失败的问题</Description>
   </PropertyGroup>
 
   <ItemGroup>
