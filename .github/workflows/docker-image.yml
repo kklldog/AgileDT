@@ -2,10 +2,12 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+    branches: [ publish ]
+    paths-ignore: 
+      - '**/*.md'
+      - '**/*.yml'
+      - '**/AgileDT.Client/*'
+      - '**/AgileDT.ClientTests/*'
 jobs:
 
   build:
