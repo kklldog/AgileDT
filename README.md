@@ -2,7 +2,40 @@
 可靠消息最终一致性服务
 
 ## 运行服务端
+在服务新建一个数据库并且新建一张表
+```
+// crate event_message table on mysql
+create table if not exists event_message
+(
+	event_id varchar(36) not null
+		primary key,
+	biz_msg varchar(4000) null,
+	status enum('Prepare', 'Done', 'WaitSend', 'Sent', 'Finish', 'Cancel') not null,
+	create_time datetime(3) null,
+	event_name varchar(255) null
+);
+```
+使用docker-compose运行服务端
+```
+version: "3"  # optional since v1.27.0
+services:
+  agile_dt:
+    image: "kklldog/agile_dt"
+    ports:
+      - "5000:5000"
+    environment:
+      - db:provider=mysql
+      - db:conn= Database=agile_dt;Data Source=192.168.0.115;User Id=root;Password=mdsd;port=3306
+      - mq:userName=admin
+      - mq:password=123456
+      - mq:host=192.168.0.115
+      - mq:port=5672
+```
 ## 安装客户端
+在主动方跟被动方都需要安装AgileDT的客户端库
+```
+Install-Package AgileDT.Client
+```
 ## 主动方使用方法
 1. 在业务数据库添加事务消息表
 ```
