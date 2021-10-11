@@ -144,8 +144,12 @@ create table if not exists event_message
 + 这里必须使用DtEventName注解标记需要处理的事件名称
 + Reveive 方法必须是冥等的
 ```
+    public interface IOrderAddedMessageHandler: IEventMessageHandler
+    {
+    }
+    
     [DtEventName("orderservice.order_added")]
-    public class OrderAddedMessageHandler: IEventMessageHandler
+    public class OrderAddedMessageHandler: IOrderAddedMessageHandler
     {
         static object _lock = new object();
 
