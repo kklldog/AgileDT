@@ -2,11 +2,9 @@ name: publish ci workflow
 
 on:
   push:
-    branches: [ publish ]
     paths-ignore: 
       - '**/*.md'
       - '**/*.yml'
-    
 jobs:
   build-dotnet:
     runs-on: ubuntu-latest
