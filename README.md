@@ -1,5 +1,9 @@
+![GitHub stars](https://img.shields.io/github/stars/kklldog/AgileDT)
+![Commit Date](https://img.shields.io/github/last-commit/kklldog/AgileDT/master.svg?logo=github&logoColor=green&label=commit)
+![Nuget](https://img.shields.io/nuget/v/AgileDT.Client?label=AgileDT.Client)
+![Docker image](https://img.shields.io/docker/v/kklldog/agile_dt?label=docker%20image)
 # AgileDT
-可靠消息最终一致性服务
+分布式事务-可靠消息最终一致性框架
 
 ## 运行服务端
 在服务新建一个数据库并且新建一张表
@@ -78,14 +82,15 @@ create table if not exists event_message
             ...
         }
 ```
-5. 实现IEventService方法
+5. 实现IEventService方法   
 处理主动方业务逻辑的类需要实现IEventService接口，并且标记那个方法是真正的业务方法。AgileDT在启动的时候会扫描这些类型，并且使用AOP技术生成代理类，在业务方法前后插入对应的逻辑来跟可靠消息服务通讯。
 这里要注意的几个地方：
 + 实现IEventService接口
 + 使用DtEventBizMethod注解标记业务入口方法
 + 使用DtEventName注解来标记事务的方法名称，如果不标记则使用类名
    
-> 注意：业务方法最终一定要使用事务来同步修改消息表的status字段为done状态，这个操作框架没办法帮你实现
+> 注意：业务方法最终一定要使用事务来同步修改消息表的status字段为done状态，这个操作框架没办法帮你实现   
+> 注意：业务方法如果失败请抛出Exception，如果不抛异常框架一律认为执行成功
 ```
  public interface IAddOrderService:IEventService
     {
@@ -172,7 +177,7 @@ create table if not exists event_message
             ...
         }
 ```
-4. 实现IEventMessageHandler接口
+4. 实现IEventMessageHandler接口   
 被动方需要接收MQ投递过来的消息，这些处理类需要实现IEventMessageHandler接口。AgileDT启动的时候会去扫描这些类，然后跟MQ建立绑定关系。
 + 这里必须使用DtEventName注解标记需要处理的事件名称
 + Reveive 方法必须是冥等的
