@@ -1,0 +1,30 @@
+name: publish ci workflow
+
+on:
+  push:
+    branches: [ publish ]
+    paths-ignore: 
+      - '**/*.md'
+      - '**/*.yml'
+    
+jobs:
+  build-dotnet:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Push to Docker Hub
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_NAME }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        repository: kklldog/agile_dt
+        tags: latest
