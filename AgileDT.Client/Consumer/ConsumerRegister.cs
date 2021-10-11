@@ -35,10 +35,6 @@ namespace AgileDT.Client.Consumer
                 var eventName = item.Key.GetEventName();
                 var itf = item.Value;
 
-                using var sc = _serviceProvider.CreateScope();
-                var obj = sc.ServiceProvider.GetRequiredService(itf);
-                var imp = obj as IEventMessageHandler;
-
                 MQ.BindConsumer(eventName, (m, args) =>
                 {
                     try
@@ -46,6 +42,10 @@ namespace AgileDT.Client.Consumer
                         var message = Encoding.UTF8.GetString(args.Body.ToArray());
                         Console.WriteLine($"receive message ： {message}");
                         var eventMsg = JsonConvert.DeserializeObject<EventMessage>(message);
+
+                        using var sc = _serviceProvider.CreateScope();
+                        var obj = sc.ServiceProvider.GetRequiredService(itf);
+                        var imp = obj as IEventMessageHandler;
                         var service = imp;
                         var ret = service.Receive(eventMsg);
                         if (ret)

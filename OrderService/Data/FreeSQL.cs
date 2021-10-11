@@ -21,6 +21,7 @@ namespace OrderService.Data
 #if DEBUG
             _freesql.CodeFirst.SyncStructure<EventMessage>();
             _freesql.CodeFirst.SyncStructure<Order>();
+            _freesql.CodeFirst.SyncStructure<PaymentHistory>();
 #endif
         }
 

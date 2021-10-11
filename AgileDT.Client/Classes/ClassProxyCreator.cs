@@ -46,17 +46,23 @@ namespace AgileDT.Client.Classes
             CreateUsing(returnType , usingStr2);
             var ctrs = CreateCtrs(source, newClassName);
             var method = MethodCodeStype(bizMethod);
+            var rtType = CreateReutrunType(returnType);
 
             var classStr = ClassTemplate.ClassTemp
                 .Replace("@using", usingStr0 + usingStr1 + usingStr2)
                 .Replace("@ctrs", ctrs)
                 .Replace("@ns", ns)
-                .Replace("@returnType", CreateReutrunType(returnType))
+                .Replace("@returnType", rtType)
                 .Replace("@methodName", method)
                 .Replace("@sourceClassName", sourceClassName)
                 .Replace("@newClassName", newClassName)
                 .Replace("@bizMethodName", bizMethod.Name)
                 .Replace("@bizMethodCallParams", string.Join(',', bizMethod.GetParameters().Select(x => x.Name).ToArray()));
+
+            if (rtType == "void")
+            {
+                classStr = classStr.Replace("void ret;", "").Replace("ret =", "").Replace("return ret;", "");
+            }
 
             return classStr;
         }

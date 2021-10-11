@@ -7,12 +7,12 @@ using System;
 
 namespace MemberService.Services
 {
-    public interface IOrderAddedMessageHandler: IEventMessageHandler
+    public interface IPaymentFinishMessageHandler : IEventMessageHandler
     {
     }
 
-    [DtEventName("orderservice.order_added")]
-    public class OrderAddedMessageHandler: IOrderAddedMessageHandler
+    [DtEventName("OrderService.PaymentFinish")]
+    public class PaymentFinishMessageHandler : IEventMessageHandler
     {
         static object _lock = new object();
 
@@ -20,7 +20,11 @@ namespace MemberService.Services
         {
             var bizMsg = message.BizMsg;
             var eventId = message.EventId;
-            string orderId = bizMsg;
+            dynamic msg = JsonConvert.DeserializeObject<dynamic>(bizMsg);
+
+            string payId = msg.payId;
+            int amount = msg.amount;
+            int points = msg.points;
 
             lock (_lock)
             {
@@ -31,8 +35,7 @@ namespace MemberService.Services
                     {
                         Id = Guid.NewGuid().ToString(),
                         EventId = message.EventId,
-                        OrderId = orderId,
-                        Points = 20,
+                        Points = points,
                         CreateTime = DateTime.Now
                     }).ExecuteAffrows();
 
