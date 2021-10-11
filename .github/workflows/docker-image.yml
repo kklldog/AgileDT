@@ -18,5 +18,5 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_HUB_NAME }}
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-        repository: kklldog/agile_config
+        repository: kklldog/agile_dt
         tags: latest
