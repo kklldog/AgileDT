@@ -4,8 +4,55 @@
 ## 运行服务端
 ## 安装客户端
 ## 主动方使用方法
-1. 实现IEventService方法
+1. 在业务数据库添加事务消息表
+```
+// crate event_message table on mysql
+create table if not exists event_message
+(
+	event_id varchar(36) not null
+		primary key,
+	biz_msg varchar(4000) null,
+	status enum('Prepare', 'Done', 'WaitSend', 'Sent', 'Finish', 'Cancel') not null,
+	create_time datetime(3) null,
+	event_name varchar(255) null
+);
+
+```
+2. 修改配置文件
+```
+在appsettings.json文件添加以下节点：
+  "agiledt": {
+    "server": "http://localhost:5000",
+    "db": {
+      "provider": "mysql",
+      "conn": "Database=agile_order;Data Source=192.168.0.125;User Id=dev;Password=dev@123f;port=13306"
+      //"conn": "Database=agile_order;Data Source=192.168.0.115;User Id=root;Password=mdsd;port=3306"
+    },
+    "mq": {
+      "host": "192.168.0.125",
+      //"host": "192.168.0.115",
+      "userName": "admin",
+      "password": "123456",
+      "port": 5672
+    }
+  }
+```
+3. 注入 AgileDT 客户端服务
+```
+       public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddAgileDT();
+            ...
+        }
+```
+5. 实现IEventService方法
 处理主动方业务逻辑的类需要实现IEventService接口，并且标记那个方法是真正的业务方法。AgileDT在启动的时候会扫描这些类型，并且使用AOP技术生成代理类，在业务方法前后插入对应的逻辑来跟可靠消息服务通讯。
+这里要注意的几个地方：
++ 实现IEventService接口
++ 使用DtEventBizMethod注解标记业务入口方法
++ 使用DtEventName注解来标记事务的方法名称，如果不标记则使用类名
+   
+> 注意：业务方法最终一定要使用事务来同步修改消息表的status字段为done状态，这个操作框架没办法帮你实现
 ```
  public interface IAddOrderService:IEventService
     {
@@ -63,7 +110,39 @@
     }
 ```
 ## 被动方使用方法
+1. 在业务方数据库建表或者在业务表上加字段   
+对于被动方来说这里不是必须要建一个表。但是至少要有个地方来存储event_id的信息，最简单的是直接在业务主表上加event_id字段。
+2. 修改配置文件
+```
+在appsettings.json文件添加以下节点：
+  "agiledt": {
+    "server": "http://localhost:5000",
+    "db": {
+      "provider": "mysql",
+      "conn": "Database=agile_order;Data Source=192.168.0.125;User Id=dev;Password=dev@123f;port=13306"
+      //"conn": "Database=agile_order;Data Source=192.168.0.115;User Id=root;Password=mdsd;port=3306"
+    },
+    "mq": {
+      "host": "192.168.0.125",
+      //"host": "192.168.0.115",
+      "userName": "admin",
+      "password": "123456",
+      "port": 5672
+    }
+  }
+```
+3. 注入AgileDT服务
+```
+       public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddAgileDT();
+            ...
+        }
+```
+4. 实现IEventMessageHandler接口
 被动方需要接收MQ投递过来的消息，这些处理类需要实现IEventMessageHandler接口。AgileDT启动的时候会去扫描这些类，然后跟MQ建立绑定关系。
++ 这里必须使用DtEventName注解标记需要处理的事件名称
++ Reveive 方法必须是冥等的
 ```
     [DtEventName("orderservice.order_added")]
     public class OrderAddedMessageHandler: IEventMessageHandler
