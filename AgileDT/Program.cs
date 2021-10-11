@@ -20,7 +20,11 @@ namespace AgileDT
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                    .UseKestrel(ks=> {
+                        ks.ListenAnyIP(5000);
+                    })
+                    .UseStartup<Startup>();
                 });
     }
 }

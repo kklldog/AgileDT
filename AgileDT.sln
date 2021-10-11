@@ -11,7 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemberService", "MemberServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgileDT.Client", "AgileDT.Client\AgileDT.Client.csproj", "{7E31C453-34B5-49A4-8A16-31ED37468837}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgileDT.ClientTests", "AgileDT.ClientTests\AgileDT.ClientTests.csproj", "{2EFC97AC-ABC2-4F2E-A5A7-0CF19B86F626}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgileDT.ClientTests", "AgileDT.ClientTests\AgileDT.ClientTests.csproj", "{2EFC97AC-ABC2-4F2E-A5A7-0CF19B86F626}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C97AFA4E-203A-4675-83C2-450855699380}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,13 @@
+﻿version: "3"  # optional since v1.27.0
+services:
+  agile_dt:
+    image: "kklldog/agile_dt"
+    ports:
+      - "5000:5000"
+    environment:
+      - db:provider=mysql
+      - db:conn= Database=agile_dt;Data Source=192.168.0.115;User Id=root;Password=mdsd;port=3306
+      - mq:userName=admin
+      - mq:password=123456
+      - mq:host=192.168.0.115
+      - mq:port=5672
