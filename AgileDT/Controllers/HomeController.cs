@@ -18,7 +18,7 @@ namespace AgileDT.Controllers
         [HttpGet]
         public string Get()
         {
-            return "AgileDT server is running ...";
+            return "AgileDT server is running now .";
         }
     }
 }
