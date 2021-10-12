@@ -4,7 +4,9 @@
 ![Docker image](https://img.shields.io/docker/v/kklldog/agile_dt?label=docker%20image)
 # AgileDT
 分布式事务-可靠消息最终一致性框架
-
+## 依赖组件
++ mysql
++ rabbitmq
 ## 运行服务端
 在服务新建一个数据库并且新建一张表
 ```
